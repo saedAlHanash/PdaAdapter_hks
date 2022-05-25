@@ -391,7 +391,7 @@
     <string name="cus_gb_start">Start(word):</string>
     <string name="cus_lock_area">LockArea:</string>
 
-    <string name="chinese">Chinese</string>
+    <string name="arabic">العربية</string>
     <string name="english">English</string>
     <string name="upgrade_complete">Upgrade is complete</string>
     <string name="notSerial">Cannot find serial port</string>
@@ -426,5 +426,6 @@
     <string name="wrong_user_or_Pass">اسم المستخدم أو كلمة المرور غير صحيحة</string>
     <string name="language">العربية</string>
     <string name="change_langue">تغيير اللغة</string>
+    <string name="not_connected">غير متصل</string>
 </resources>
 

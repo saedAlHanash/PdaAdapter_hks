@@ -1,29 +1,54 @@
 package com.example.gxwl.rederdemo.SAED;
 
+import android.view.View;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Objects;
 
 public class SocketClient {
 
     Socket socket;
     InetAddress inetAddress;
     PrintWriter mBufferOut;
+    ConnectStat connectStat;
 
+    String ip;
+    int port;
+    boolean reconnect = false;
+
+    boolean isConnect = false;
+
+    DataInputStream finalIn = null;
+
+    public void setConnectStat(ConnectStat connectStat) {
+        this.connectStat = connectStat;
+    }
 
     private void initPrintWriter() throws IOException {
         mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+        mBufferOut.println("connected with" + socket.getLocalAddress().getHostName() + socket.getPort());
     }
 
     public boolean connect(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
         try {
             inetAddress = InetAddress.getByName(ip);
             socket = new Socket(inetAddress, port);// الاتصال بال socket
 
             initPrintWriter();// تهيئة ال buffer writer
+            isConnect = true;
+
+            connectStat.stat(true);
+
+            new Thread(runnable).start();
 
             return socket.isConnected();
         } catch (IOException e) {
@@ -33,9 +58,31 @@ public class SocketClient {
     }
 
     public boolean isConnected() {
-        if (socket == null)
+        if (socket == null) {
             return false;
-        return socket.isConnected();
+        }
+        return socket.isConnected() && isConnect;
+    }
+
+    public void reConnect() {
+        if (reconnect)
+            return;
+
+        reconnect = true;
+        new Thread(() -> {
+            while (reconnect) {
+                //اذا الاتصال تم
+                if (connect(ip, port)) {
+                    reconnect = false;
+                    break;
+                } else // اذا لم يتصل
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+            }
+        }).start();
     }
 
     public void sendBoolean(boolean b) {
@@ -85,13 +132,45 @@ public class SocketClient {
 //        mBufferOut.flush();
     }
 
-    public void close() {
+
+    private final Runnable runnable = () -> {
         try {
-            socket.close();
-            mBufferOut.close();
-        } catch (Exception e) {
+            finalIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        while (true) {
+            try {
+                finalIn.readBoolean();
+            } catch (IOException ignore) {
+                isConnect = false;
+                connectStat.stat(false);
+                break;
+            }
+        }
+    };
+
+    public void close() {
+
+
+        new Thread(() ->
+        {
+            try {
+                mBufferOut.println("close connect" + socket.getLocalAddress().getHostName() + socket.getPort());
+                socket.close();
+                mBufferOut.close();
+                finalIn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ).start();
+
+
+    }
+
+    public interface ConnectStat {
+        void stat(boolean b);
     }
 
 }

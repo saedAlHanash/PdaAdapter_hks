@@ -6,6 +6,7 @@
     android:background="@color/gray_bg"
     android:backgroundTintMode="screen"
     android:gravity="center"
+    android:layoutDirection="ltr"
     android:orientation="vertical"
     tools:context=".EntryActivity">
 
@@ -112,7 +113,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/layout_marginTop_20"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="invisible">
 
             <Button
                 android:id="@+id/chinese"
@@ -120,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/button_style"
-                android:text="@string/chinese"
+                android:text="@string/arabic"
                 android:textAllCaps="false"
                 android:textSize="@dimen/text_size_20" />
 

@@ -1,9 +1,6 @@
 package com.example.gxwl.rederdemo.SAED;
 
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -11,20 +8,21 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.EntryActivity;
 import com.example.gxwl.rederdemo.R;
 
 import java.util.Locale;
 
-import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import info.hoang8f.android.segmented.SegmentedGroup;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -32,8 +30,13 @@ public class AuthActivity extends AppCompatActivity {
     Button login;
     @BindView(R.id.guest)
     Button guest;
-    @BindView(R.id.language)
-    TextView language;
+    @BindView(R.id.segmented2)
+    SegmentedGroup segmentedGroup;
+
+    @BindView(R.id.english)
+    RadioButton english;
+    @BindView(R.id.arabic)
+    RadioButton arabic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,38 +46,55 @@ public class AuthActivity extends AppCompatActivity {
 
         listeners();
 
+        initLanguage();
+
+    }
+
+    void initLanguage() {
+
+        segmentedGroup.setTintColor(getResources().getColor(R.color.main_color));
+
+        if (SharedPreference.getLanguage().equals("en"))
+            english.setChecked(true);
+        else
+            arabic.setChecked(true);
+
+        segmentedGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            if (i == R.id.english) {
+                if (SharedPreference.getLanguage().equals("en"))
+                    return;
+                SharedPreference.saveLanguage("en");
+                setLanguage("en");
+            } else {
+                if (SharedPreference.getLanguage().equals("ar"))
+                    return;
+                SharedPreference.saveLanguage("ar");
+                setLanguage("ar");
+            }
+        });
+
     }
 
     void listeners() {
         login.setOnClickListener(adminListener);
         guest.setOnClickListener(guestListener);
 
-        language.setOnClickListener(languageListener);
-    }
 
+
+    }
 
     private final View.OnClickListener adminListener = view -> {
         startLoginActivity();
     };
 
     private final View.OnClickListener guestListener = view -> {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            guest.setBackgroundTintList(getResources().getColorStateList(R.color.main_color));
-        else
-            guest.setBackgroundColor(getResources().getColor(R.color.main_color));
         startEntryActivity();
-    };
-
-    private final View.OnClickListener languageListener = view -> {
-        alert();
     };
 
     void startEntryActivity() {
         Intent intent = new Intent(this, EntryActivity.class);
         intent.putExtra("key", "user");
         startActivity(intent);
-        this.finish();
     }
 
     void startLoginActivity() {
@@ -83,13 +103,18 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     void setLanguage(String lang) {
-        Resources resources = this.getResources();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-        Configuration config = resources.getConfiguration();
-        Locale locale = new Locale(lang.toLowerCase());
+
+        Locale locale = new Locale(lang);
+
         Locale.setDefault(locale);
-        config.setLocale(locale);
-        resources.updateConfiguration(config, displayMetrics);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+
+        Intent refresh = new Intent(this, AuthActivity.class);
+        startActivity(refresh);
+        finish();
     }
 
     void alert() {
@@ -132,3 +157,14 @@ public class AuthActivity extends AppCompatActivity {
         builder.create().show();
     }
 }
+
+
+//    void setLanguage(String lang) {
+//        Resources resources = this.getResources();
+//        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+//        Configuration config = resources.getConfiguration();
+//        Locale locale = new Locale(lang.toLowerCase());
+//        Locale.setDefault(locale);
+//        config.setLocale(locale);
+//        resources.updateConfiguration(config, displayMetrics);
+//    }

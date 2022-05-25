@@ -26,6 +26,8 @@ public class SharedPreference {
     public static final String USERS = "u";
     private static final String USER_INFO = "u_i";
     private static final String DEACTIVATE = "dac";
+    private static final String IP = "ip";
+    private static final String PORT = "port";
 
 
     public static SharedPreferences sp;
@@ -212,28 +214,28 @@ public class SharedPreference {
     }
 
 
-    public static ArrayList<Pair<String, String>> getUsers() {
-
-        String jsonString = sp.getString(USERS, "");
-
-        JsonUsers users = gson.fromJson(jsonString, JsonUsers.class);
-
-        return users.users;
+    public static void saveIp(String ip) {
+        spEdit.putString(IP, ip).commit();
     }
 
-    public static void addUser(Pair<String, String> user) {
-
-        String jsonString = sp.getString(USERS, "");
-
-
-        JsonUsers users = gson.fromJson(jsonString, JsonUsers.class);
-        users.users.add(user);
-
-        spEdit.putString(USERS, gson.toJson(users)).apply();
+    public static void savePort(int port) {
+        spEdit.putInt(PORT, port).commit();
     }
 
-
-    public static class JsonUsers {
-        ArrayList<Pair<String, String>> users;
+    public static String getIp() {
+        return sp.getString(IP, "");
     }
+
+    public static int getPort() {
+        return sp.getInt(PORT, 0);
+    }
+
+    public static void saveLanguage(String l) {
+        spEdit.putString("lang", l).commit();
+    }
+
+    public static String getLanguage() {
+        return sp.getString("lang", "");
+    }
+
 }

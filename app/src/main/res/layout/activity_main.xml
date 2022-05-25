@@ -5,12 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layoutDirection="ltr"
     tools:context=".ReadOrWriteActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/not_connect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@color/red"
+            android:fontFamily="@font/cairo"
+            android:gravity="center"
+            android:text="@string/not_connected"
+            android:textColor="@color/white"
+            app:layout_anchor="@+id/linearLayout" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -281,16 +296,16 @@
         app:layout_anchor="@id/tabHead"
         app:layout_anchorGravity="top|right|end">
 
-<!--        <cc.trity.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/exportExcel"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:clickable="true"-->
-<!--            app:borderWidth="0dp"-->
-<!--            app:elevation="5dp"-->
-<!--            app:fabSize="mini"-->
-<!--            app:fab_colorNormal="#0099CC"-->
-<!--            app:fab_icon="@mipmap/excel" />-->
+        <!--        <cc.trity.floatingactionbutton.FloatingActionButton-->
+        <!--            android:id="@+id/exportExcel"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:clickable="true"-->
+        <!--            app:borderWidth="0dp"-->
+        <!--            app:elevation="5dp"-->
+        <!--            app:fabSize="mini"-->
+        <!--            app:fab_colorNormal="#0099CC"-->
+        <!--            app:fab_icon="@mipmap/excel" />-->
 
 
         <cc.trity.floatingactionbutton.FloatingActionButton
@@ -327,15 +342,15 @@
             app:fab_icon="@mipmap/write_epc" />
 
         <cc.trity.floatingactionbutton.FloatingActionButton
-        android:id="@+id/tag_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:borderWidth="0dp"
-        app:elevation="5dp"
-        app:fabSize="mini"
-        app:fab_colorNormal="#0099CC"
-        app:fab_icon="@mipmap/tag_info" />
+            android:id="@+id/tag_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:borderWidth="0dp"
+            app:elevation="5dp"
+            app:fabSize="mini"
+            app:fab_colorNormal="#0099CC"
+            app:fab_icon="@mipmap/tag_info" />
 
     </cc.trity.floatingactionbutton.FloatingActionsMenu>
 

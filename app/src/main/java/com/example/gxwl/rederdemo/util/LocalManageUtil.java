@@ -48,7 +48,7 @@ public class LocalManageUtil {
             case 0:
                 return getSystemLocale(context);
             case 1:
-                return Locale.CHINA;
+                return new Locale("ar");
             case 2:
 //                return Locale.ENGLISH;
             default:

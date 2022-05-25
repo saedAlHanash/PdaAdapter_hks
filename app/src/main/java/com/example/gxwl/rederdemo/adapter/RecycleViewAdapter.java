@@ -3,11 +3,13 @@ package com.example.gxwl.rederdemo.adapter;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.gxwl.rederdemo.R;
@@ -23,10 +25,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     private List<TagInfo> mTagList;
     private Integer thisPosition = null;
     public boolean threadKill = true;
-    Activity activity;
-    onScanItem onScanItem;
-    int latestPosition = 0;
 
+    Activity activity;
     public Thread thread;
 
     public Integer getThisPosition() {
@@ -40,24 +40,33 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public RecycleViewAdapter(List<TagInfo> list, Activity activity) {
         mTagList = list;
         this.activity = activity;
+        initSendDataThread();
+    }
 
+    void initSendDataThread() {
         thread = new Thread(() -> {
-
-            onScanItem = () -> {
-                thread.interrupt();
-            };
-
             while (threadKill) {
 
-                for (int i = latestPosition; i < mTagList.size(); i++) {
-                    if (((ReadOrWriteActivity) activity).socketClient.isConnected())
+                for (int i = 0; i < mTagList.size(); i++) {
+
+                    if (((ReadOrWriteActivity) activity).socketClient.isConnected()) {//يوجد اتصال
+
+                        if (mTagList.get(i).isSanded)//العنصر تم ارساله
+                            continue;
+                        //ارسال العنصر
                         ((ReadOrWriteActivity) activity).socketClient.sendString(mTagList.get(i).getEpc());
+                        mTagList.get(i).isSanded = true;
+
+                        int finalI = i;
+                        activity.runOnUiThread(() -> notifyItemChanged(finalI)); // تعليم بأنه مرسل
+
+                    } else {
+                        ((ReadOrWriteActivity) activity).socketClient.reConnect();//اعادة الاتصال
+                    }
                 }
 
-                latestPosition = mTagList.size();
-
                 try {
-                    thread.sleep(1500000000);
+                    thread.sleep(99999999);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -72,11 +81,16 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         return mTagList != null ? mTagList.size() : 0;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_item, parent, false);
         final RecycleViewAdapter.ViewHolder holder = new RecycleViewAdapter.ViewHolder(view);
         view.setOnClickListener(v -> {
+
+            if (!mTagList.get(holder.getAdapterPosition()).isSanded)
+                thread.interrupt();
+
             TagInfo tag = mTagList.get(holder.getAdapterPosition());
             setThisPosition(holder.getAdapterPosition());
             notifyDataSetChanged();
@@ -96,6 +110,12 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         holder.reserveData.setText(tag.getReservedData());
         holder.count.setText(tag.getCount().toString());
         holder.rssi.setText(tag.getRssi());
+//        sased:
+        if (mTagList.get(position).isSanded)
+            holder.imageView.setVisibility(View.VISIBLE);
+        else
+            holder.imageView.setVisibility(View.INVISIBLE);
+
         if (getThisPosition() != null && position == getThisPosition()) {
             holder.index.setBackgroundColor(Color.rgb(135, 206, 235));
             holder.type.setBackgroundColor(Color.rgb(135, 206, 235));
@@ -126,7 +146,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         TextView count;
         TextView userData;
         TextView reserveData;
-
+        ImageView imageView;
 
         public ViewHolder(final View view) {
             super(view);
@@ -138,6 +158,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             count = (TextView) view.findViewById(R.id.count);
             userData = (TextView) view.findViewById(R.id.userData);
             reserveData = (TextView) view.findViewById(R.id.reserveData);
+            imageView = view.findViewById(R.id.imageView6);
         }
     }
 
@@ -148,12 +169,9 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             notifyDataSetChanged();
         }
 
-        onScanItem.getETC();
+        thread.interrupt();
     }
 
-    interface onScanItem {
-        void getETC();
-    }
 
 }
 

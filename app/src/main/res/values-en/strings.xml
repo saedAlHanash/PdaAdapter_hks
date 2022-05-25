@@ -426,4 +426,6 @@
     <string name="wrong_user_or_Pass">Incorrect username or password</string>
     <string name="language">English</string>
     <string name="change_langue">change Language</string>
+    <string name="not_connected">not connect</string>
+    <string name="arabic">العربية</string>
 </resources>

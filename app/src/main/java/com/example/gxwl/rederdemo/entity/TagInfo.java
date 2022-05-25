@@ -13,6 +13,8 @@ public class TagInfo implements Serializable {
     private String userData;
     private String reservedData;
     private Date readTime;
+    //    saed:
+    public boolean isSanded = false;// to checking if sanded to server socket
 
     public TagInfo() {
     }

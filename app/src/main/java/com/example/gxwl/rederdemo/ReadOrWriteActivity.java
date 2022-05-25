@@ -2,6 +2,7 @@ package com.example.gxwl.rederdemo;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -104,6 +105,7 @@ import me.weyye.hipermission.HiPermission;
 import me.weyye.hipermission.PermissionCallback;
 import me.weyye.hipermission.PermissionItem;
 
+@SuppressLint("NonConstantResourceId")
 public class ReadOrWriteActivity extends AppCompatActivity {
     // region 组件变量
     @BindView(R.id.read)
@@ -134,6 +136,8 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     TextView timeCount;
     @BindView(R.id.tabHead)
     LinearLayout tabHead;
+    @BindView(R.id.not_connect)
+    TextView notConnectTv;
 
     EditText w_epc;
     EditText w_tid;
@@ -240,13 +244,20 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     private boolean isSound = true;
     MenuItem gMenuItem = null;
     private boolean isReader = false;
-    private SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    @SuppressLint("SimpleDateFormat")
+    private final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
     //saed :
     public SocketClient socketClient = new SocketClient();
+
+    /**
+     * to checking if can reConnect with socket <p>
+     * will be false when onDistroy Activity
+     */
     boolean tryConnect = true;
     public Thread thread;
-    String port, ip;
+    public String ip;
+    public int port;
 
 
     @Override
@@ -258,37 +269,82 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         isClient = getIntent().getBooleanExtra("isClient", false);
 
         ip = getIntent().getStringExtra("ip").replaceAll("\\s+", "");
-        port = getIntent().getStringExtra("port").replaceAll("\\s+", "");
+        port = getIntent().getIntExtra("port", 0);
 
-        initSocket(ip, Integer.parseInt(port));
+        initSocket(ip, port);
 
         if (isClient) {
             subHandler(GlobalClient.getClient());
         }
         initRecycleView();
         UtilSound.initSoundPool(this);
+
+//        new Handler(getMainLooper()).postDelayed(() -> {
+//
+//
+//            for (int i = 0; i < 20; i++) {
+//                TagInfo info = new TagInfo();
+//                info.setIndex(123L);
+//                info.setUserData("22222223333333333333333333333333333333333333333333333333333333333333333333333333333333士大夫是非得失是的22222222222222222222222222222222222222222222222222222222222222222233333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333");
+//                info.setReservedData("3333333333333333");
+//                info.setCount(3243l);
+//                info.setType("6c");
+//                info.setRssi("123");
+//                info.setEpc(i + "");
+//                tagInfoList.add(info);
+//            }
+//            adapter.notifyData(tagInfoList);
+//        }, 5000);
+//
+//        new Handler(getMainLooper()).postDelayed(() -> {
+//
+//            for (int i = 0; i < 20; i++) {
+//                TagInfo info = new TagInfo();
+//                info.setIndex(123L);
+//                info.setUserData("22222223333333333333333333333333333333333333333333333333333333333333333333333333333333士大夫是非得失是的22222222222222222222222222222222222222222222222222222222222222222233333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333");
+//                info.setReservedData("3333333333333333");
+//                info.setCount(3243l);
+//                info.setType("6c");
+//                info.setRssi("123");
+//                info.setEpc(i * 2 + "");
+//                tagInfoList.add(info);
+//            }
+//            adapter.notifyData(tagInfoList);
+//        }, 10000);
+
+
     }
 
     //saed :
-    void initSocket(String mIp, int mPort) {
-
-        if (!tryConnect)
-            return;
-
+    public void initSocket(String mIp, int mPort) {
         new Thread(() -> {
-            if (socketClient.connect(mIp, mPort)) {
-                runOnUiThread(() -> Toast.makeText(ReadOrWriteActivity.this, "socket connected", Toast.LENGTH_SHORT).show());
-            } else {
-                try {
-                    runOnUiThread(() -> Toast.makeText(ReadOrWriteActivity.this, "reconnected pleas weat ", Toast.LENGTH_SHORT).show());
-                    Thread.sleep(5000);
-                    initSocket(mIp, mPort);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            while (tryConnect) {
+
+                //اذا الاتصال تم
+                if (socketClient.connect(mIp, mPort)) {
+                    //اخفاء noConnect textView
+                    runOnUiThread(() -> notConnectTv.setVisibility(View.GONE));
+                    break;
+                } else // اذا لم يتصل
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
             }
         }).start();
 
+        socketClient.setConnectStat(connect -> {
+
+            runOnUiThread(() -> {
+                if (connect)
+                    notConnectTv.setVisibility(View.GONE);
+                else
+                    notConnectTv.setVisibility(View.VISIBLE);
+            });
+
+
+        });
     }
 
     //初始化RecycleView
@@ -300,38 +356,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         rv.addItemDecoration(new DividerItemDecoration(this, 1));
         adapter = new RecycleViewAdapter(tagInfoList, this);
         rv.setAdapter(adapter);
-
-
-        new Handler(getMainLooper()).postDelayed(()->{
-
-            TagInfo info = new TagInfo();
-            info.setIndex(123L);
-            info.setUserData("22222223333333333333333333333333333333333333333333333333333333333333333333333333333333士大夫是非得失是的22222222222222222222222222222222222222222222222222222222222222222233333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333");
-            info.setReservedData("3333333333333333");
-            info.setCount(3243l);
-            info.setType("6c");
-            info.setRssi("123");
-            info.setEpc("1");
-            tagInfoList.add(info);
-            adapter.notifyData(tagInfoList);
-
-        },3000);
-
-
-        new Handler(getMainLooper()).postDelayed(()->{
-
-            TagInfo info = new TagInfo();
-            info.setIndex(123L);
-            info.setUserData("22222223333333333333333333333333333333333333333333333333333333333333333333333333333333士大夫是非得失是的22222222222222222222222222222222222222222222222222222222222222222233333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333");
-            info.setReservedData("3333333333333333");
-            info.setCount(3243l);
-            info.setType("6c");
-            info.setRssi("123");
-            info.setEpc("1");
-            tagInfoList.add(info);
-            adapter.notifyData(tagInfoList);
-
-        },6000);
 
     }
 
@@ -641,7 +665,13 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                 }
             }
         }
-//        Log.e(this.getClass().getName(), "onDestroy");
+
+        this.tryConnect = false;
+
+        adapter.threadKill = false;
+        adapter.thread.interrupt();
+
+        socketClient.close();
     }
 
     @Override
@@ -1538,7 +1568,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 
-//    @OnClick(R.id.exportExcel)
+    //    @OnClick(R.id.exportExcel)
     public void fab_excel() {
         if (!isReader) {
             List<PermissionItem> permissonItems = new ArrayList<PermissionItem>();
@@ -1637,7 +1667,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 //        System.err.println(keyCode);
-        Log.e("onKeyDown",keyCode+"");
+        Log.e("onKeyDown", keyCode + "");
         switch (keyCode) {
             case 131:
                 if (isReader) {
@@ -1653,7 +1683,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
 //        ToastUtils.showText(keyCode + "");
-        Log.e("onKeyUp",keyCode+"");
+        Log.e("onKeyUp", keyCode + "");
         return super.onKeyUp(keyCode, event);
     }
 

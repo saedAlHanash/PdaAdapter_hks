@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
+import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.util.CheckCommunication;
 import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.LocalManageUtil;
@@ -48,6 +49,8 @@ import butterknife.OnClick;
 import me.weyye.hipermission.HiPermission;
 import me.weyye.hipermission.PermissionCallback;
 import me.weyye.hipermission.PermissionItem;
+
+import static com.example.gxwl.rederdemo.AppConfig.SharedPreference.*;
 
 
 public class EntryActivity extends AppCompatActivity {
@@ -79,12 +82,7 @@ public class EntryActivity extends AppCompatActivity {
         @Override
         public boolean handleMessage(Message msg) {
             if (msg.what == 1) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        bar.setProgress((int) rate);
-                    }
-                });
+                runOnUiThread(() -> bar.setProgress((int) rate));
             }
             return true;
         }
@@ -101,10 +99,11 @@ public class EntryActivity extends AppCompatActivity {
         setContentView(R.layout.entry_layout);
         ButterKnife.bind(this);
 
-        //saed :
 
+        //saed :
         hideItemIfFromUser(getIntent());
         initIpEditText();
+        initIpAnPort();
 
 
         Integer selectLanguage = LocalManageUtil.getSelectLanguage(this);
@@ -143,6 +142,7 @@ public class EntryActivity extends AppCompatActivity {
 
         ip.setFilters(filters);
     }
+
     //saed :
     void hideItemIfFromUser(Intent intent) {
 
@@ -155,6 +155,18 @@ public class EntryActivity extends AppCompatActivity {
                     findViewById(R.id.rfidConfig).setVisibility(View.GONE);
                 }
         }
+    }
+
+    void initIpAnPort() {
+
+        int mPort = getPort();
+        String mIp = getIp();
+
+        if (!mIp.isEmpty())
+            this.ip.setText(mIp);
+
+        if (mPort != 0)
+            this.port.setText(String.valueOf(mPort));
     }
 
     //设备连接  /dev/ttyS1:115200
@@ -235,7 +247,7 @@ public class EntryActivity extends AppCompatActivity {
     public void initConnected() {
         String hks = "/dev/ttysWK0:115200";
         HksPower.uhf_power(1);
-        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64,100)) {
+        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 100)) {
 //        if (GlobalClient.getClient().openAndroidSerial(hks, 0)) {
             isClient = true;
             ToastUtils.showText("连接成功");
@@ -247,25 +259,31 @@ public class EntryActivity extends AppCompatActivity {
 
     @OnClick(R.id.readOrWrite)
     public void readOrWrite() {
-//        if (isClient) {
+        if (isClient) {
+        String mIp = ip.getText().toString();
+        int mPort = Integer.parseInt(port.getText().toString());
 
-            if (ip.getText().length() == 0) {
-                ip.setError("");
-                return;
-            }
-            if (port.getText().length() == 0) {
-                port.setError("");
-                return;
-            }
+        if (mIp.isEmpty()) {
+            ip.setError("required");
+            return;
+        }
+        if (mPort == 0) {
+            port.setError("required");
+            return;
+        }
 
-            Intent intent = new Intent(this, ReadOrWriteActivity.class);
-            intent.putExtra("isClient", isClient);
-            intent.putExtra("ip", ip.getText().toString());
-            intent.putExtra("port", port.getText().toString());
-            startActivity(intent);
-//        } else {
-//            ToastUtils.showText(getResources().getString(R.string.ununited));
-//        }
+        saveIp(mIp);
+        savePort(mPort);
+
+        Intent intent = new Intent(this, ReadOrWriteActivity.class);
+        intent.putExtra("isClient", isClient);
+        intent.putExtra("ip", mIp);
+        intent.putExtra("port", mPort);
+        startActivity(intent);
+
+        } else {
+            ToastUtils.showText(getResources().getString(R.string.ununited));
+        }
     }
 
     @OnClick(R.id.rfidConfig)

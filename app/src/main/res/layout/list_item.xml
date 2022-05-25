@@ -4,6 +4,11 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
+    <!--just for padding -->
+    <View
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="match_parent" />
+
     <TextView
         android:layout_width="@dimen/layout_width_70"
         android:layout_height="wrap_content"
