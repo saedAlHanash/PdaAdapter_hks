@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/cus_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/upgradeTitle"
+        android:textAlignment="center"
+        android:textColor="@color/DodgerBlue"
+        android:textSize="@dimen/text_size_26" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/file"
+            android:textSize="@dimen/text_size_23" />
+
+        <EditText
+            android:id="@+id/file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textNoSuggestions" />
+
+        <Button
+            android:id="@+id/select_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="..."
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_size_23" />
+
+        <Button
+            android:id="@+id/upgrade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/upgrade"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_size_23" />
+
+    </LinearLayout>
+
+
+    <com.daimajia.numberprogressbar.NumberProgressBar
+        android:id="@+id/upgradeBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="@dimen/layout_marginTop_40"
+        android:layout_marginRight="20dp"
+
+        app:progress_current="0"
+        app:progress_max="100"
+
+        app:progress_reached_bar_height="20dp"
+        app:progress_reached_color="#3498DB"
+
+        app:progress_text_color="#3498DB"
+        app:progress_text_offset="1dp"
+        app:progress_text_size="23sp"
+        app:progress_text_visibility="visible"
+
+        app:progress_unreached_bar_height="2dp"
+        app:progress_unreached_color="@color/IndianRed" />
+</LinearLayout>

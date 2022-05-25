@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/layout_padding_15">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_w_area"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_20" />
+
+        <Spinner
+            android:id="@+id/w_f_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/cus_write_area" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_w_start"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_f_start"
+            android:layout_width="@dimen/layout_width_150"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cus_w_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_20" />
+
+    <EditText
+        android:id="@+id/w_f_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_area" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_w_blockNum"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_f_block"
+            android:layout_width="@dimen/layout_width_50"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="@dimen/text_size_20" />
+
+        <CheckBox
+            android:id="@+id/w_f_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_w_block" />
+
+        <Button
+            android:id="@+id/w_f_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_write"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</LinearLayout>

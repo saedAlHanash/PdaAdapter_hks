@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:padding="@dimen/layout_padding_15">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="6C标签写用户数据区"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/text_size_26" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EPC:"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_user_epc"
+            android:layout_width="@dimen/layout_width_360"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TID:"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_user_tid"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="访问密码:"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_user_pas"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:hint="00000000"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="起始地址:"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_user_len"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="写入值:"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_20" />
+
+    <EditText
+        android:id="@+id/w_user_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_area"
+        android:enabled="true"
+        android:gravity="top"
+        android:maxLines="5"
+        android:minLines="3"
+        android:scrollbars="vertical" />
+</LinearLayout>

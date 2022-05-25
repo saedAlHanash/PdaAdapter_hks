@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/layout_padding_15">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_w_area"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_20" />
+
+        <Spinner
+            android:id="@+id/cus_6b_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/cus_6b_area" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_6b_start"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/cus_6b_start"
+            android:layout_width="@dimen/layout_width_150"
+            android:layout_height="wrap_content"
+            android:text="8"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cus_w_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_20" />
+
+    <EditText
+        android:id="@+id/cus_6b_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_area" />
+
+
+        <Button
+            android:id="@+id/cus_6b_write_event"
+            android:layout_width="@dimen/layout_width_100"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@string/cus_write"
+            android:textAllCaps="false" />
+
+</LinearLayout>

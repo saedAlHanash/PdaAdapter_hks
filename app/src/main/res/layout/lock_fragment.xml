@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/layout_padding_15"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ViewStub
+            android:id="@+id/lock_epc_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout="@layout/lock_epc_item" />
+
+        <ViewStub
+            android:id="@+id/lock_6b_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout="@layout/lock_6b_item" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/lock"
+        android:layout_gravity="right"
+        android:layout_width="@dimen/layout_width_100"
+        android:textAllCaps="false"
+        android:layout_height="wrap_content"
+        android:text="@string/lock" />
+</LinearLayout>

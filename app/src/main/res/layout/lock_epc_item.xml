@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/layout_padding_15">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/layout_padding_15"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_lock_area"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_20" />
+
+        <Spinner
+            android:id="@+id/cus_6b_lock_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/lock_area" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/layout_marginTop_10"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/operaType"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_20" />
+
+        <Spinner
+            android:id="@+id/cus_6b_lock_type"
+            android:layout_width="@dimen/layout_width_150"
+            android:layout_height="wrap_content"
+            android:entries="@array/lock_type" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/cus_6c_lock_event"
+        android:layout_width="@dimen/layout_width_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/lock"
+        android:textAllCaps="false" />
+</LinearLayout>

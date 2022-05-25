@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:padding="@dimen/layout_padding_15">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/writegbEpc"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/text_size_26" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wEpc"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_gb_epc"
+            android:layout_width="@dimen/layout_width_360"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wTid"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_gb_tid"
+            android:layout_width="@dimen/layout_width_360"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wLen"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_gb_len"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:hint="@string/no_automatic"
+            android:text="0"
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wPas"
+            android:textSize="@dimen/text_size_20" />
+
+        <EditText
+            android:id="@+id/w_gb_pas"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:hint="00000000"
+            android:textSize="@dimen/text_size_20" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wValue"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_20" />
+
+    <EditText
+        android:id="@+id/w_gb_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_area"
+        android:enabled="true"
+        android:gravity="top"
+        android:hint="@string/write_epc_empty"
+        android:maxLines="5"
+        android:minLines="3"
+        android:scrollbars="vertical" />
+</LinearLayout>

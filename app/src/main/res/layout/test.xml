@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <RelativeLayout
+            android:id="@+id/base_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/layout_margin_15"
+            android:background="@drawable/layer"
+            android:padding="@dimen/layout_padding_30">
+
+            <TextView
+                android:id="@+id/freq_point_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/frequencyPoint"
+                android:textSize="@dimen/text_size_20" />
+
+            <Spinner
+                android:id="@+id/freq_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/freq_point_text"
+                android:entries="@array/frePoint"
+                android:textAlignment="center"
+                android:theme="@style/itemSpinnerStyle" />
+
+            <Button
+                android:id="@+id/standing_wave_send"
+                android:layout_width="@dimen/layout_width_140"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/freq_point_text"
+                android:layout_marginTop="@dimen/layout_marginTop_10"
+                android:text="@string/carrierWave"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+            <Button
+                android:id="@+id/standing_wave_stop"
+                android:layout_width="@dimen/layout_width_140"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/freq_point_text"
+                android:layout_marginTop="@dimen/layout_marginTop_10"
+                android:layout_toRightOf="@+id/standing_wave_send"
+                android:text="@string/stop"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:background="@android:color/white"
+            android:padding="@dimen/layout_padding_5"
+            android:text="@string/carrierWave"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size_23" />
+
+        <RelativeLayout
+            android:id="@+id/frequency_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/base_layout"
+            android:layout_margin="@dimen/layout_margin_15"
+            android:background="@drawable/layer"
+            android:padding="@dimen/layout_padding_30">
+
+            <TextView
+                android:id="@+id/pre_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pre_power"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/standing_wave_pre"
+                android:layout_width="@dimen/layout_width_100"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/pre_text"
+                android:layout_toRightOf="@+id/pre_text"
+                android:textSize="@dimen/text_size_23" />
+
+            <TextView
+                android:id="@+id/suf_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pre_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:text="@string/suf_power"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/standing_wave_suf"
+                android:layout_width="@dimen/layout_width_100"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/suf_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:layout_toRightOf="@+id/suf_text"
+                android:textSize="@dimen/text_size_23" />
+
+            <Button
+                android:id="@+id/detection"
+                android:layout_width="@dimen/layout_width_140"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/suf_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:text="@string/detection"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+
+        </RelativeLayout>
+
+        <!--  This is the title label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/base_layout"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:background="@android:color/white"
+            android:padding="@dimen/layout_padding_5"
+            android:text="@string/waveDetection"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size_23" />
+
+
+        <RelativeLayout
+            android:id="@+id/power_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frequency_layout"
+            android:layout_margin="@dimen/layout_margin_15"
+            android:background="@drawable/layer"
+            android:padding="@dimen/layout_padding_30">
+
+            <TextView
+                android:id="@+id/childFrequency_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/childFrequency"
+                android:textSize="@dimen/text_size_20" />
+
+            <Spinner
+                android:id="@+id/childFrequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/childFrequency_text"
+                android:entries="@array/frePoint"
+                android:textAlignment="center"
+                android:theme="@style/itemSpinnerStyle" />
+
+            <TextView
+                android:id="@+id/calibration_power_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/childFrequency_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:text="@string/calibration_power"
+                android:textSize="@dimen/text_size_20" />
+
+            <Spinner
+                android:id="@+id/calibration_power"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/childFrequency_text"
+                android:layout_toRightOf="@+id/calibration_power_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:entries="@array/ant"
+                android:textAlignment="center"
+                android:theme="@style/itemSpinnerStyle" />
+
+            <TextView
+                android:id="@+id/calibrationParam_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/calibration_power"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:text="@string/calibrationParam"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/calibrationParam"
+                android:layout_width="@dimen/layout_width_80"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/calibrationParam_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:layout_toRightOf="@+id/calibrationParam_text"
+                android:textSize="@dimen/text_size_23" />
+
+            <Button
+                android:id="@+id/calibration_action"
+                android:layout_width="@dimen/layout_width_140"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/calibrationParam"
+                android:layout_marginLeft="@dimen/layout_padding_10"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:layout_toRightOf="@+id/calibrationParam"
+                android:text="@string/calibrationAction"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+            <Button
+                android:id="@+id/calibration_end"
+                android:layout_width="@dimen/layout_width_140"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/calibrationParam_text"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:text="@string/calibrationEnd"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+            <Button
+                android:id="@+id/calibration_query"
+                android:layout_width="@dimen/layout_width_140"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/calibrationParam_text"
+                android:layout_marginLeft="@dimen/layout_marginTop_10"
+                android:layout_marginTop="@dimen/layout_marginTop_20"
+                android:layout_toRightOf="@+id/calibration_end"
+                android:text="@string/query"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+
+        </RelativeLayout>
+
+        <!--  This is the title label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frequency_layout"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:background="@android:color/white"
+            android:padding="@dimen/layout_padding_5"
+            android:text="@string/powerCalibration"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size_23" />
+
+    </RelativeLayout>
+</ScrollView>

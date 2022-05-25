@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/layout_padding_15">
+
+    <Button
+        android:id="@+id/cus_gb_destroy"
+        android:layout_marginTop="@dimen/layout_marginTop_10"
+        android:layout_width="@dimen/layout_width_150"
+        android:textAllCaps="false"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/destroy"/>
+</LinearLayout>

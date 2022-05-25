@@ -1,0 +1,7 @@
+Executable : C:\Users\24309\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\ninja.exe
+arguments : 
+-C
+C:\Users\24309\Desktop\PDA\PdaAdapter_hks\app\.cxx\cmake\debug\x86_64
+native-lib
+jvmArgs : 
+

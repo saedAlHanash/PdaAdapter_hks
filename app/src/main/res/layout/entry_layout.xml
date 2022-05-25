@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:backgroundTintMode="screen"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".EntryActivity">
+
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_version"
+        android:textAlignment="center"
+        android:textColor="@color/DodgerBlue"
+        android:textSize="@dimen/text_size_23" />
+
+    <LinearLayout
+        android:layout_width="@dimen/layout_width_300"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/ip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:background="@drawable/out_line_border"
+            android:digits="0123456789."
+            android:ems="10"
+            android:hint="xx . xx . x . x"
+            android:inputType="number|numberDecimal"
+            android:paddingStart="@dimen/_15sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp" />
+
+        <EditText
+            android:id="@+id/port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:background="@drawable/out_line_border"
+            android:ems="10"
+            android:hint="port"
+            android:inputType="numberSigned|number"
+            android:maxLength="6"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_10sdp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/readOrWrite"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/button_style"
+            android:text="@string/readOrWrite"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_size_20" />
+
+        <Button
+            android:id="@+id/rfidConfig"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:background="@drawable/button_style"
+            android:text="@string/rfid"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_size_20" />
+
+        <Button
+            android:id="@+id/upgradeBaseband"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:background="@drawable/button_style"
+            android:text="@string/upgradeBase"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_size_20" />
+
+        <Button
+            android:id="@+id/deviceInfo"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:background="@drawable/button_style"
+            android:text="@string/deviceInfo"
+            android:textAllCaps="false"
+            android:textSize="@dimen/text_size_20" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/chinese"
+                android:layout_width="@dimen/layout_width_150"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/button_style"
+                android:text="@string/chinese"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+            <Button
+                android:id="@+id/english"
+                android:layout_width="@dimen/layout_width_150"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/button_style"
+                android:text="@string/english"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_20" />
+
+        </LinearLayout>
+
+        <!--        <LinearLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginTop="@dimen/layout_marginTop_20"-->
+        <!--            android:gravity="center"-->
+        <!--            android:orientation="horizontal">-->
+        <!--            <Button-->
+        <!--                android:id="@+id/cusConnect"-->
+        <!--                android:layout_width="@dimen/layout_width_150"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:textColor="@color/DodgerBlue"-->
+        <!--                android:background="@drawable/button_style"-->
+        <!--                android:textAllCaps="false"-->
+        <!--                android:text="@string/deviceConnect"-->
+        <!--                android:textSize="@dimen/text_size_20" />-->
+
+        <!--            <Button-->
+        <!--                android:id="@+id/disConnect"-->
+        <!--                android:layout_width="@dimen/layout_width_150"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:textColor="@color/IndianRed"-->
+        <!--                android:textAllCaps="false"-->
+        <!--                android:background="@drawable/button_style"-->
+        <!--                android:text="@string/disConnect"-->
+        <!--                android:textSize="@dimen/text_size_20" />-->
+        <!--        </LinearLayout>-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!--        android:textAlignment="center"-->
+        <TextView
+            android:id="@+id/connect_param"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+
+            android:textSize="@dimen/text_size_20" />
+    </LinearLayout>
+</LinearLayout>

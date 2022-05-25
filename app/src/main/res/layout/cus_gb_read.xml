@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cus_linear"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:padding="@dimen/layout_padding_15">
+
+        <TextView
+            android:id="@+id/cus_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cus_read_gb_title"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/text_size_26" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cus_gb_read_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb"
+                android:textSize="@dimen/text_size_20" />
+
+            <Spinner
+                android:id="@+id/cus_gb_read_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/layout_marginLeft_25"
+                android:entries="@array/cus_gb_mode"
+                android:theme="@style/itemSpinnerStyle"></Spinner>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cus_read_gb_start"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/cus_read_gb_start"
+                android:layout_width="@dimen/layout_width_150"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_20" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cus_read_gb_content"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/cus_read_gb_content"
+                android:layout_width="@dimen/layout_width_300"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_20" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cus_gb_read_check_tid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb_tid"
+                android:textSize="@dimen/text_size_20" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/layout_marginLeft_25"
+                android:text="@string/filter_read_gb_mode"
+                android:textSize="@dimen/text_size_20" />
+
+            <Spinner
+                android:id="@+id/cus_readTid_gb_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/tid_read_mode"
+                android:textSize="@dimen/text_size_20"
+                android:theme="@style/itemSpinnerStyle" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb_len"
+                android:textSize="@dimen/text_size_23" />
+
+            <EditText
+                android:id="@+id/filter_read_gb_len"
+                android:layout_width="@dimen/layout_width_150"
+                android:layout_height="wrap_content"
+                android:text="6"
+                android:textSize="@dimen/text_size_20" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cus_gb_read_check_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb_user"
+                android:textSize="@dimen/text_size_20" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/layout_marginLeft_25"
+                android:text="@string/filter_read_gb_userChild"
+                android:textSize="@dimen/text_size_23" />
+
+            <Spinner
+                android:id="@+id/filter_read_gb_userChild"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/cus_gb_user_mode"
+                android:textSize="@dimen/text_size_20"
+                android:theme="@style/itemSpinnerStyle" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb_userChild_start"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/filter_read_gb_userChild_start"
+                android:layout_width="@dimen/layout_width_150"
+                android:layout_height="wrap_content"
+                android:text="4"
+                android:textSize="@dimen/text_size_20" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb_userChild_len"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/cus_read_gb_len"
+                android:layout_width="@dimen/layout_width_150"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="@dimen/text_size_20" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_read_gb_userChild_pas"
+                android:textSize="@dimen/text_size_20" />
+
+            <EditText
+                android:id="@+id/filter_read_gb_userChild_pas"
+                android:layout_width="@dimen/layout_width250"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_20" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

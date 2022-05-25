@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <Spinner
+        android:id="@+id/rs232_android_port"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/spinner_border"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_30"
+        android:theme="@style/connectSpinnerStyle" />
+    <Spinner
+        android:id="@+id/rs232_android_baud"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:entries="@array/baud"
+        android:background="@drawable/spinner_border"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_23"
+        android:theme="@style/connectSpinnerStyle" />
+</LinearLayout>
