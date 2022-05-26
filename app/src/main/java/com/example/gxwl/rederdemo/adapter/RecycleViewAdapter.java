@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,13 @@ import android.widget.TextView;
 
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.ReadOrWriteActivity;
-import com.example.gxwl.rederdemo.SAED.SocketClient;
 import com.example.gxwl.rederdemo.entity.TagInfo;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
+
     private List<TagInfo> mTagList;
     private Integer thisPosition = null;
     public boolean threadKill = true;
@@ -43,6 +41,15 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         initSendDataThread();
     }
 
+    /**
+     * start thread to send data to socket <br>
+     * its making for in all items id {@link #mTagList} and checking each item if sent or not<br>
+     * after for finishing thread sleeping<br>
+     * then when an new items adding to adapter thread interrupt and do new for in items and resend
+     * all items not sent<br>
+     *
+     *
+     */
     void initSendDataThread() {
         thread = new Thread(() -> {
             while (threadKill) {
@@ -58,15 +65,18 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
                         mTagList.get(i).isSanded = true;
 
                         int finalI = i;
-                        activity.runOnUiThread(() -> notifyItemChanged(finalI)); // تعليم بأنه مرسل
+                        activity.runOnUiThread(() -> notifyItemChanged(finalI)); //✅ تعليم بأنه مرسل
 
                     } else {
-                        ((ReadOrWriteActivity) activity).socketClient.reConnect();//اعادة الاتصال
+                        //اذا كان ال thread الأول الذي يحاول الاتصال ما زال يحاول
+                        //(موجود في ال activity في تابع ال initSocket)
+                        if (!((ReadOrWriteActivity) activity).tryConnect)
+                            ((ReadOrWriteActivity) activity).socketClient.reConnect();//اعادة الاتصال
                     }
                 }
 
                 try {
-                    thread.sleep(99999999);
+                    thread.sleep(99999999); //sleep long time 💤💤
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

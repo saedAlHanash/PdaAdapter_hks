@@ -28,19 +28,14 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.ComparatorCompat;
-import com.annimon.stream.Stream;
-import com.example.gxwl.rederdemo.SAED.SocketClient;
+import com.example.gxwl.rederdemo.SAED.Network.SocketClient;
 import com.example.gxwl.rederdemo.adapter.RecycleViewAdapter;
 import com.example.gxwl.rederdemo.entity.TagInfo;
 import com.example.gxwl.rederdemo.util.ComputedPc;
@@ -78,7 +73,6 @@ import com.gg.reader.api.protocol.gx.MsgBaseWriteEpc;
 import com.gg.reader.api.protocol.gx.MsgBaseWriteGb;
 import com.gg.reader.api.protocol.gx.Param6bReadUserdata;
 import com.gg.reader.api.protocol.gx.ParamEpcFilter;
-import com.gg.reader.api.protocol.gx.ParamEpcReadEpc;
 import com.gg.reader.api.protocol.gx.ParamEpcReadReserved;
 import com.gg.reader.api.protocol.gx.ParamEpcReadTid;
 import com.gg.reader.api.protocol.gx.ParamEpcReadUserdata;
@@ -249,16 +243,19 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     //saed :
     public SocketClient socketClient = new SocketClient();
-
     /**
      * to checking if can reConnect with socket <p>
-     * will be false when onDistroy Activity
+     * will be false when onDestroy Activity
      */
-    boolean tryConnect = true;
-    public Thread thread;
+    public boolean tryConnect = true;
+    /**
+     * socket ip address
+     */
     public String ip;
+    /**
+     * socket port
+     */
     public int port;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -314,11 +311,17 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
 
     }
-
     //saed :
+
+    /**
+     * start connection with socket
+     *
+     * @param mIp   socket ip address
+     * @param mPort socket port
+     */
     public void initSocket(String mIp, int mPort) {
-        new Thread(() -> {
-            while (tryConnect) {
+        new Thread(() -> { //لانه لا يمكن الاتصال من ال UI thread
+            while (tryConnect) { // من أجل المحاولة والمحاولة حتى تمام عملية الاتصال
 
                 //اذا الاتصال تم
                 if (socketClient.connect(mIp, mPort)) {
@@ -332,18 +335,17 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
             }
+
         }).start();
 
-        socketClient.setConnectStat(connect -> {
-
+        //call back active when connect stat change
+        socketClient.setOnChangeConnectStatListener(connect -> {
             runOnUiThread(() -> {
                 if (connect)
                     notConnectTv.setVisibility(View.GONE);
                 else
                     notConnectTv.setVisibility(View.VISIBLE);
             });
-
-
         });
     }
 
@@ -438,6 +440,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     public void readCard() {
         if (isClient) {
             if (!isReader) {
+
                 if (type.getCheckedRadioButtonId() == R.id.c) {
                     MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
                     msg.setAntennaEnable(EnumG.AntennaNo_1);
@@ -534,6 +537,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                         ToastUtils.showText(msg.getRtMsg());
                     }
                 }
+
             } else {
                 ToastUtils.showText(getResources().getString(R.string.read_card_being));
             }
@@ -1668,15 +1672,15 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 //        System.err.println(keyCode);
         Log.e("onKeyDown", keyCode + "");
-        switch (keyCode) {
-            case 131:
-                if (isReader) {
-                    stopRead();
-                } else {
-                    readCard();
-                }
-                break;
-        }
+
+//        Toast.makeText(this, "اختبار الزر" + keyCode, Toast.LENGTH_SHORT).show();
+
+        if (keyCode == 285)//زر جهاز ال R.F.I.D
+            if (isReader)
+                stopRead();
+            else
+                readCard();
+
         return super.onKeyDown(keyCode, event);
     }
 

@@ -427,5 +427,7 @@
     <string name="language">العربية</string>
     <string name="change_langue">تغيير اللغة</string>
     <string name="not_connected">غير متصل</string>
+    <string name="connect_rfid_fail">فشل الاتصال بالماسح</string>
+    <string name="connect_rfid_success">نجح الاتصال بجهاز المسح</string>
 </resources>
 

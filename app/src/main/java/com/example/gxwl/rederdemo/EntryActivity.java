@@ -23,7 +23,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
-import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.util.CheckCommunication;
 import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.LocalManageUtil;
@@ -89,9 +88,9 @@ public class EntryActivity extends AppCompatActivity {
     });
     AlertDialog infoDialog = null;
 
-//    static {
-//        System.loadLibrary("native-lib");
-//    }
+    static {
+        System.loadLibrary("native-lib");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,16 +249,16 @@ public class EntryActivity extends AppCompatActivity {
         if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 100)) {
 //        if (GlobalClient.getClient().openAndroidSerial(hks, 0)) {
             isClient = true;
-            ToastUtils.showText("连接成功");
+            ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
         } else {
             isClient = false;
-            ToastUtils.showText("连接失败");
+            ToastUtils.showText(getResources().getString(R.string.connect_rfid_fail));
         }
     }
 
     @OnClick(R.id.readOrWrite)
     public void readOrWrite() {
-        if (isClient) {
+//        if (isClient) {
         String mIp = ip.getText().toString();
         int mPort = Integer.parseInt(port.getText().toString());
 
@@ -281,9 +280,9 @@ public class EntryActivity extends AppCompatActivity {
         intent.putExtra("port", mPort);
         startActivity(intent);
 
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
+//        } else {
+//            ToastUtils.showText(getResources().getString(R.string.ununited));
+//        }
     }
 
     @OnClick(R.id.rfidConfig)

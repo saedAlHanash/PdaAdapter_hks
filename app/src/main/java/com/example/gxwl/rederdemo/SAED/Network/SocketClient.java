@@ -1,6 +1,4 @@
-package com.example.gxwl.rederdemo.SAED;
-
-import android.view.View;
+package com.example.gxwl.rederdemo.SAED.Network;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -10,32 +8,59 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Objects;
 
 public class SocketClient {
 
     Socket socket;
     InetAddress inetAddress;
+
     PrintWriter mBufferOut;
+    /**
+     * call back fro listen connect change stat
+     */
     ConnectStat connectStat;
 
     String ip;
     int port;
+
+    /**
+     * to checking if there thread actually running and try to connect <br>
+     * then no need to open new thread to re connect <br>
+     * just lat current thread try
+     */
     boolean reconnect = false;
 
+    /**
+     * set true when socket connect
+     * set false when socket lost connect
+     */
     boolean isConnect = false;
 
     DataInputStream finalIn = null;
 
-    public void setConnectStat(ConnectStat connectStat) {
+    /**
+     * set listener for connect change in this Socket<br>
+     * if lost connect return false and if reconnect return true
+     */
+    public void setOnChangeConnectStatListener(ConnectStat connectStat) {
         this.connectStat = connectStat;
     }
 
+    /**
+     * init PrintWriter to send data in socket
+     */
     private void initPrintWriter() throws IOException {
         mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-        mBufferOut.println("connected with" + socket.getLocalAddress().getHostName() + socket.getPort());
+        mBufferOut.println("connected with" + socket.getLocalAddress().getHostName() + socket.getPort()); // ارسال من اتصل للسيرفر
     }
 
+    /**
+     * start connect with server Socket
+     *
+     * @param ip   socket ip address
+     * @param port socket port
+     * @return true if connecting
+     */
     public boolean connect(String ip, int port) {
         this.ip = ip;
         this.port = port;
@@ -46,17 +71,23 @@ public class SocketClient {
             initPrintWriter();// تهيئة ال buffer writer
             isConnect = true;
 
-            connectStat.stat(true);
+            connectStat.stat(true); // تغيير الحالة في ال callBack
 
+
+            //تهيئة متنصت قراءة من ال socket بحيث عند انقطاع الاتصال يقوم ب exception من خلاله نقوم بتغير حالة التصال بال callBack
+            //تم اللجوء لهذا الحل لان ال socket.isConnected() تقوم بإرجاع true دوما
             new Thread(runnable).start();
 
             return socket.isConnected();
+
         } catch (IOException e) {
-            e.printStackTrace();
             return false;
         }
     }
 
+    /**
+     * checking if socket is connecting
+     */
     public boolean isConnected() {
         if (socket == null) {
             return false;
@@ -64,6 +95,9 @@ public class SocketClient {
         return socket.isConnected() && isConnect;
     }
 
+    /**
+     * reconnect with server socket
+     */
     public void reConnect() {
         if (reconnect)
             return;
@@ -132,7 +166,10 @@ public class SocketClient {
 //        mBufferOut.flush();
     }
 
-
+    /**
+     * start listener reed in socket <br>
+     * الاستفادة : عند فقدان الاتصال يقوم برد أكسبشن لذلك نستفيد منه فقط لمعرفة حالة الاتصال
+     */
     private final Runnable runnable = () -> {
         try {
             finalIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -150,6 +187,9 @@ public class SocketClient {
         }
     };
 
+    /**
+     * close connect with server socket
+     */
     public void close() {
 
 
@@ -172,5 +212,4 @@ public class SocketClient {
     public interface ConnectStat {
         void stat(boolean b);
     }
-
 }

@@ -428,4 +428,6 @@
     <string name="change_langue">change Language</string>
     <string name="not_connected">not connect</string>
     <string name="arabic">العربية</string>
+    <string name="connect_rfid_fail">connected failed with scanning device</string>
+    <string name="connect_rfid_success"> connected with scanning device</string>
 </resources>
