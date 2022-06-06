@@ -77,7 +77,7 @@ public class WriteFragment extends Fragment {
                     write6b();
                 }
             });
-        } else if (tagType == R.id.gb) {
+        } /*else if (tagType == R.id.gb) {
             view = inflater.inflate(R.layout.write_gb_cus, container, false);
             initGb(view);
             cus_gb_write_event.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +86,7 @@ public class WriteFragment extends Fragment {
                     writeGb();
                 }
             });
-        }
+        }*/
         ButterKnife.bind(this, view);
         return view;
     }

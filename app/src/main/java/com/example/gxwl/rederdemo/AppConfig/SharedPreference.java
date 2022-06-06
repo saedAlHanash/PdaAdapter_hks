@@ -235,7 +235,7 @@ public class SharedPreference {
     }
 
     public static String getLanguage() {
-        return sp.getString("lang", "");
+        return sp.getString("lang", "en");
     }
 
 }

@@ -10,7 +10,7 @@ public class CheckCommunication {
         if (msg.getRtCode() == 0) {
             return true;
         } else {
-            ToastUtils.showText("通信超时");
+            ToastUtils.showText("time out");
             return false;
         }
     }

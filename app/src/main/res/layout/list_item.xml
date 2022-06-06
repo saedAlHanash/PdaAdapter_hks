@@ -23,7 +23,8 @@
         android:background="@drawable/layer"
         android:gravity="center"
         android:text="@string/type"
-        android:textSize="@dimen/text_size_23" />
+        android:textSize="@dimen/text_size_23"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="@dimen/layout_width_300"
@@ -39,7 +40,8 @@
         android:background="@drawable/layer"
         android:gravity="center"
         android:text="@string/tid"
-        android:textSize="@dimen/text_size_23" />
+        android:textSize="@dimen/text_size_23"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="@dimen/layout_width_300"
@@ -47,7 +49,8 @@
         android:background="@drawable/layer"
         android:gravity="center"
         android:text="@string/userData"
-        android:textSize="@dimen/text_size_23" />
+        android:textSize="@dimen/text_size_23"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="@dimen/layout_width250"
@@ -55,7 +58,8 @@
         android:background="@drawable/layer"
         android:gravity="center"
         android:text="@string/reserveData"
-        android:textSize="@dimen/text_size_23" />
+        android:textSize="@dimen/text_size_23"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="@dimen/layout_width_150"
@@ -63,7 +67,8 @@
         android:background="@drawable/layer"
         android:gravity="center"
         android:text="@string/totalCount"
-        android:textSize="@dimen/text_size_23" />
+        android:textSize="@dimen/text_size_23"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="@dimen/layout_width_80"
@@ -71,5 +76,6 @@
         android:background="@drawable/layer"
         android:gravity="center"
         android:text="@string/rssi"
-        android:textSize="@dimen/text_size_23" />
+        android:textSize="@dimen/text_size_23"
+        android:visibility="gone" />
 </LinearLayout>

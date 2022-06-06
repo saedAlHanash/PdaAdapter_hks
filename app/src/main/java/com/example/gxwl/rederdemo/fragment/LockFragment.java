@@ -83,7 +83,7 @@ public class LockFragment extends Fragment {
                 }
             });
 
-        } else if (tagType == R.id.gb) {
+        } /*else if (tagType == R.id.gb) {
             view = inflater.inflate(R.layout.lock_gb_item, container, false);
             cus_gb_lock_area = view.findViewById(R.id.cus_gb_lock_area);
             cus_gb_lock_type = view.findViewById(R.id.cus_gb_lock_type);
@@ -94,7 +94,7 @@ public class LockFragment extends Fragment {
                     lockGb();
                 }
             });
-        }
+        }*/
         ButterKnife.bind(this, view);
         return view;
     }

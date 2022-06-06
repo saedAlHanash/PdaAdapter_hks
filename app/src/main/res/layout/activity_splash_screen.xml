@@ -4,17 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".SAED.SplashScreenActivity">
+    android:background="@color/light_gray"
+    tools:context=".SAED.UI.Activities.SplashScreenActivity">
 
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="@dimen/_200sdp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:src="@drawable/logo"
+        app:srcCompat="@drawable/ic_logo_without_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -29,7 +27,7 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/cairo"
         android:text="Copyright 2022 © BandTech"
-        android:textColor="@color/main_color"
+        android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -61,10 +61,6 @@ public class EntryActivity extends AppCompatActivity {
 
     @BindView(R.id.connect_param)
     TextView connect_param;
-    @BindView(R.id.ip)
-    EditText ip;
-    @BindView(R.id.port)
-    EditText port;
 
     NumberProgressBar bar;
     EditText filePath;
@@ -88,9 +84,9 @@ public class EntryActivity extends AppCompatActivity {
     });
     AlertDialog infoDialog = null;
 
-    static {
-        System.loadLibrary("native-lib");
-    }
+//    static {
+//        System.loadLibrary("native-lib");
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,74 +94,14 @@ public class EntryActivity extends AppCompatActivity {
         setContentView(R.layout.entry_layout);
         ButterKnife.bind(this);
 
-
-        //saed :
-        hideItemIfFromUser(getIntent());
-        initIpEditText();
-        initIpAnPort();
-
-
-        Integer selectLanguage = LocalManageUtil.getSelectLanguage(this);
-        if (selectLanguage != null) {
-            LocalManageUtil.saveSelectLanguage(this, selectLanguage);
-        } else {
-            LocalManageUtil.saveSelectLanguage(this, 0);
-        }
+//        Integer selectLanguage = LocalManageUtil.getSelectLanguage(this);
+//        if (selectLanguage != null) {
+//            LocalManageUtil.saveSelectLanguage(this, selectLanguage);
+//        } else {
+//            LocalManageUtil.saveSelectLanguage(this, 0);
+//        }
 //        cusConnect();
         initConnected();
-    }
-
-    //saed :
-    void initIpEditText() {
-        InputFilter[] filters = new InputFilter[1];
-        filters[0] = (source, start, end, dest, dstart, dend) -> {
-            if (end > start) {
-                String destTxt = dest.toString();
-                String resultingTxt = destTxt.substring(0, dstart)
-                        + source.subSequence(start, end)
-                        + destTxt.substring(dend);
-                if (!resultingTxt
-                        .matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
-                    return "";
-                } else {
-                    String[] splits = resultingTxt.split("\\.");
-                    for (String split : splits) {
-                        if (Integer.parseInt(split) > 255) {
-                            return "";
-                        }
-                    }
-                }
-            }
-            return null;
-        };
-
-        ip.setFilters(filters);
-    }
-
-    //saed :
-    void hideItemIfFromUser(Intent intent) {
-
-        if (intent != null) {
-            Bundle bundle = intent.getExtras();
-            if (bundle != null)
-                if (!bundle.getString("key").equals("admin")) {
-                    findViewById(R.id.deviceInfo).setVisibility(View.GONE);
-                    findViewById(R.id.upgradeBaseband).setVisibility(View.GONE);
-                    findViewById(R.id.rfidConfig).setVisibility(View.GONE);
-                }
-        }
-    }
-
-    void initIpAnPort() {
-
-        int mPort = getPort();
-        String mIp = getIp();
-
-        if (!mIp.isEmpty())
-            this.ip.setText(mIp);
-
-        if (mPort != 0)
-            this.port.setText(String.valueOf(mPort));
     }
 
     //设备连接  /dev/ttyS1:115200
@@ -258,31 +194,15 @@ public class EntryActivity extends AppCompatActivity {
 
     @OnClick(R.id.readOrWrite)
     public void readOrWrite() {
-//        if (isClient) {
-        String mIp = ip.getText().toString();
-        int mPort = Integer.parseInt(port.getText().toString());
-
-        if (mIp.isEmpty()) {
-            ip.setError("required");
-            return;
-        }
-        if (mPort == 0) {
-            port.setError("required");
-            return;
-        }
-
-        saveIp(mIp);
-        savePort(mPort);
+        if (isClient) {
 
         Intent intent = new Intent(this, ReadOrWriteActivity.class);
         intent.putExtra("isClient", isClient);
-        intent.putExtra("ip", mIp);
-        intent.putExtra("port", mPort);
         startActivity(intent);
 
-//        } else {
-//            ToastUtils.showText(getResources().getString(R.string.ununited));
-//        }
+        } else {
+            ToastUtils.showText(getResources().getString(R.string.ununited));
+        }
     }
 
     @OnClick(R.id.rfidConfig)
@@ -533,21 +453,21 @@ public class EntryActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.english)
-    public void englishSet() {
-        Intent intent = new Intent(this, EntryActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        LocalManageUtil.saveSelectLanguage(this, 2);
-        getBaseContext().startActivity(intent);
-    }
+//    @OnClick(R.id.english)
+//    public void englishSet() {
+//        Intent intent = new Intent(this, EntryActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        LocalManageUtil.saveSelectLanguage(this, 2);
+//        getBaseContext().startActivity(intent);
+//    }
 
-    @OnClick(R.id.chinese)
-    public void chineseSet() {
-        Intent intent = new Intent(this, EntryActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        LocalManageUtil.saveSelectLanguage(this, 1);
-        getBaseContext().startActivity(intent);
-    }
+//    @OnClick(R.id.chinese)
+//    public void chineseSet() {
+//        Intent intent = new Intent(this, EntryActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        LocalManageUtil.saveSelectLanguage(this, 1);
+//        getBaseContext().startActivity(intent);
+//    }
 
     @Override
     protected void onDestroy() {
@@ -584,10 +504,10 @@ public class EntryActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocalManageUtil.setLocal(newBase));
-    }
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(LocalManageUtil.setLocal(newBase));
+//    }
 
 
 //    public native void uhf_power(int status);

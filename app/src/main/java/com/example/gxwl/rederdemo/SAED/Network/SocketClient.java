@@ -103,6 +103,7 @@ public class SocketClient {
             return;
 
         reconnect = true;
+
         new Thread(() -> {
             while (reconnect) {
                 //اذا الاتصال تم
@@ -182,6 +183,7 @@ public class SocketClient {
             } catch (IOException ignore) {
                 isConnect = false;
                 connectStat.stat(false);
+                reConnect();
                 break;
             }
         }

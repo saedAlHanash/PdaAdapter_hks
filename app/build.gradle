@@ -10,7 +10,6 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -69,5 +68,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
 
-    compile 'info.hoang8f:android-segmented:1.0.6'
+    implementation 'info.hoang8f:android-segmented:1.0.6'
+
+    //CircleImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

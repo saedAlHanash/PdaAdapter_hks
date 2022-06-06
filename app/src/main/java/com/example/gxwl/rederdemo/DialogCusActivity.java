@@ -66,29 +66,29 @@ public class DialogCusActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.write_cus);
         ButterKnife.bind(this);
-        adapter = new PageCusAdapter(getSupportFragmentManager());
-        pager.setAdapter(adapter);
-        tab.setupWithViewPager(pager);
-        tag = (TagInfo) getIntent().getSerializableExtra("Tag");
-        ant = getIntent().getLongExtra("Ant", 1);
-        tagType = getIntent().getIntExtra("Type", R.id.c);
-        if (tagType == R.id.c) {
-            String[] stringArray = getResources().getStringArray(R.array.cus_mode);
-            ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringArray);
-            cus_6c_mode.setAdapter(arrayAdapter);
-        } else if (tagType == R.id.b) {
-            cus_title.setText(getResources().getString(R.string.sixb_tag_cus));
-        } else if (tagType == R.id.gb) {
-            cus_title.setText(getResources().getString(R.string.gb_tag_cus));
-            String[] stringArray = getResources().getStringArray(R.array.cus_gb_mode);
-            ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringArray);
-            cus_6c_mode.setAdapter(arrayAdapter);
-        }
-        cus_epc.setText(tag.getEpc());
-        cus_tid.setText(tag.getTid());
-        cus_user.setText(tag.getUserData());
-        sendTag(adapter.getFragments(), ant, tagType);
-        addListener();
+//        adapter = new PageCusAdapter(getSupportFragmentManager());
+//        pager.setAdapter(adapter);
+//        tab.setupWithViewPager(pager);
+//        tag = (TagInfo) getIntent().getSerializableExtra("Tag");
+//        ant = getIntent().getLongExtra("Ant", 1);
+//        tagType = getIntent().getIntExtra("Type", R.id.c);
+//        if (tagType == R.id.c) {
+//            String[] stringArray = getResources().getStringArray(R.array.cus_mode);
+//            ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringArray);
+//            cus_6c_mode.setAdapter(arrayAdapter);
+//        } else if (tagType == R.id.b) {
+//            cus_title.setText(getResources().getString(R.string.sixb_tag_cus));
+//        } else if (tagType == R.id.gb) {
+//            cus_title.setText(getResources().getString(R.string.gb_tag_cus));
+//            String[] stringArray = getResources().getStringArray(R.array.cus_gb_mode);
+//            ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, stringArray);
+//            cus_6c_mode.setAdapter(arrayAdapter);
+//        }
+//        cus_epc.setText(tag.getEpc());
+//        cus_tid.setText(tag.getTid());
+//        cus_user.setText(tag.getUserData());
+//        sendTag(adapter.getFragments(), ant, tagType);
+//        addListener();
     }
 
     //分发标签信息与天线、标签类型
@@ -174,8 +174,8 @@ public class DialogCusActivity extends AppCompatActivity {
             }
         });
     }
-    @Override
-    protected void attachBaseContext(Context newBase){
-        super.attachBaseContext(LocalManageUtil.setLocal(newBase));
-    }
+//    @Override
+//    protected void attachBaseContext(Context newBase){
+//        super.attachBaseContext(LocalManageUtil.setLocal(newBase));
+//    }
 }

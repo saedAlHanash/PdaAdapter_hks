@@ -153,8 +153,8 @@ public class TestActivity extends AppCompatActivity {
         standing_wave_stop();
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocalManageUtil.setLocal(newBase));
-    }
+   // @Override
+   // protected void attachBaseContext(Context newBase) {
+  //      super.attachBaseContext(LocalManageUtil.setLocal(newBase));
+ //   }
 }

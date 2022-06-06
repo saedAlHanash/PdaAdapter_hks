@@ -23,9 +23,12 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     private List<TagInfo> mTagList;
     private Integer thisPosition = null;
     public boolean threadKill = true;
+    public int lastIndexSent;
 
     Activity activity;
     public Thread thread;
+
+    boolean newDataWhenThreadSendData = false;
 
     public Integer getThisPosition() {
         return thisPosition;
@@ -47,25 +50,23 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
      * after for finishing thread sleeping<br>
      * then when an new items adding to adapter thread interrupt and do new for in items and resend
      * all items not sent<br>
-     *
-     *
      */
     void initSendDataThread() {
         thread = new Thread(() -> {
             while (threadKill) {
 
-                for (int i = 0; i < mTagList.size(); i++) {
+                for (int i = lastIndexSent; i < mTagList.size(); i++) {
 
                     if (((ReadOrWriteActivity) activity).socketClient.isConnected()) {//يوجد اتصال
 
+                        lastIndexSent += 1;
+
                         if (mTagList.get(i).isSanded)//العنصر تم ارساله
                             continue;
+
                         //ارسال العنصر
                         ((ReadOrWriteActivity) activity).socketClient.sendString(mTagList.get(i).getEpc());
                         mTagList.get(i).isSanded = true;
-
-                        int finalI = i;
-                        activity.runOnUiThread(() -> notifyItemChanged(finalI)); //✅ تعليم بأنه مرسل
 
                     } else {
                         //اذا كان ال thread الأول الذي يحاول الاتصال ما زال يحاول
@@ -74,13 +75,18 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
                             ((ReadOrWriteActivity) activity).socketClient.reConnect();//اعادة الاتصال
                     }
                 }
+                //تأكد انه لم تصل بياات ريثما يتم العمل على الإرسال
+                //اذا وصل عاود عملية الارسال من جديد
+                if (!newDataWhenThreadSendData) {
 
-                try {
-                    thread.sleep(99999999); //sleep long time 💤💤
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
+                    newDataWhenThreadSendData = false;
+                    try {
+                        thread.sleep(99999999); //sleep long time 💤💤
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else  // وإلا قم يتعليم العناصر ب ✔
+                    activity.runOnUiThread(this::notifyDataSetChanged); //✅ تعليم بأنه مرسل
             }
         });
         thread.start();
@@ -113,13 +119,13 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         TagInfo tag = mTagList.get(position);
         holder.index.setText(tag.getIndex().toString());
-        holder.type.setText(tag.getType());
+//        holder.type.setText(tag.getType());
         holder.epc.setText(tag.getEpc());
-        holder.tid.setText(tag.getTid());
-        holder.userData.setText(tag.getUserData());
-        holder.reserveData.setText(tag.getReservedData());
-        holder.count.setText(tag.getCount().toString());
-        holder.rssi.setText(tag.getRssi());
+//        holder.tid.setText(tag.getTid());
+//        holder.userData.setText(tag.getUserData());
+//        holder.reserveData.setText(tag.getReservedData());
+//        holder.count.setText(tag.getCount().toString());
+//        holder.rssi.setText(tag.getRssi());
 //        sased:
         if (mTagList.get(position).isSanded)
             holder.imageView.setVisibility(View.VISIBLE);
@@ -128,22 +134,22 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
         if (getThisPosition() != null && position == getThisPosition()) {
             holder.index.setBackgroundColor(Color.rgb(135, 206, 235));
-            holder.type.setBackgroundColor(Color.rgb(135, 206, 235));
-            holder.tid.setBackgroundColor(Color.rgb(135, 206, 235));
+//            holder.type.setBackgroundColor(Color.rgb(135, 206, 235));
+//            holder.tid.setBackgroundColor(Color.rgb(135, 206, 235));
             holder.epc.setBackgroundColor(Color.rgb(135, 206, 235));
-            holder.count.setBackgroundColor(Color.rgb(135, 206, 235));
-            holder.rssi.setBackgroundColor(Color.rgb(135, 206, 235));
-            holder.userData.setBackgroundColor(Color.rgb(135, 206, 235));
-            holder.reserveData.setBackgroundColor(Color.rgb(135, 206, 235));
+//            holder.count.setBackgroundColor(Color.rgb(135, 206, 235));
+//            holder.rssi.setBackgroundColor(Color.rgb(135, 206, 235));
+//            holder.userData.setBackgroundColor(Color.rgb(135, 206, 235));
+//            holder.reserveData.setBackgroundColor(Color.rgb(135, 206, 235));
         } else {
             holder.index.setBackgroundColor(Color.WHITE);
-            holder.type.setBackgroundColor(Color.WHITE);
-            holder.tid.setBackgroundColor(Color.WHITE);
+//            holder.type.setBackgroundColor(Color.WHITE);
+//            holder.tid.setBackgroundColor(Color.WHITE);
             holder.epc.setBackgroundColor(Color.WHITE);
-            holder.count.setBackgroundColor(Color.WHITE);
-            holder.rssi.setBackgroundColor(Color.WHITE);
-            holder.userData.setBackgroundColor(Color.WHITE);
-            holder.reserveData.setBackgroundColor(Color.WHITE);
+//            holder.count.setBackgroundColor(Color.WHITE);
+//            holder.rssi.setBackgroundColor(Color.WHITE);
+//            holder.userData.setBackgroundColor(Color.WHITE);
+//            holder.reserveData.setBackgroundColor(Color.WHITE);
         }
     }
 
@@ -179,7 +185,11 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             notifyDataSetChanged();
         }
 
-        thread.interrupt();
+        if (!thread.isInterrupted()) // اذا كان ال thread منتهي من عمله وتم ارسال الكل
+            thread.interrupt();// شغله ليقوم بارسال الداتا الجديدة
+        else// وإلا
+            //ال thread لازال يعمل لذا قم بترك رسالة له ليعاود العمل عندما ينتهي
+            newDataWhenThreadSendData = true;
     }
 
 

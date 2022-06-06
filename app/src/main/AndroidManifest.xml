@@ -11,11 +11,14 @@
         android:name=".util.initApplication"
         android:allowBackup="true"
         android:icon="@mipmap/logo"
+        android:largeHeap="true"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
+
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SAED.SplashScreenActivity">
+        <activity android:name=".SAED.UI.Activities.SplashScreenActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,17 +27,15 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".SAED.LoginActivity" />
-        <activity android:name=".SAED.ClientActivity" />
-        <activity android:name=".SAED.AuthActivity" />
+        <activity android:name=".SAED.UI.Activities.ClientActivity" />
+        <activity android:name=".SAED.UI.Activities.AuthActivity" />
         <activity
             android:name=".EntryActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
         <activity
             android:name=".ReadOrWriteActivity"
-            android:label="@string/readOrWrite"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+            android:label="@string/readOrWrite" />
         <activity android:name=".RfidConfigActivity" />
         <activity android:name=".TestActivity" />
         <activity

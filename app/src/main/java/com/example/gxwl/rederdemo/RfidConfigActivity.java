@@ -68,6 +68,7 @@ public class RfidConfigActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rfid_config);
         ButterKnife.bind(this);
+
         if (CheckCommunication.check()) {//检测通信是否正常避免多次超时渲染卡顿
             baseQuery();
             frequencyQuery();
@@ -224,9 +225,9 @@ public class RfidConfigActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocalManageUtil.setLocal(newBase));
-    }
+   // @Override
+   // protected void attachBaseContext(Context newBase) {
+  //      super.attachBaseContext(LocalManageUtil.setLocal(newBase));
+ //   }
 
 }

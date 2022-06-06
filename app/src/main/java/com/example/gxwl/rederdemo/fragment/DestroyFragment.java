@@ -49,7 +49,7 @@ public class DestroyFragment extends Fragment {
                     destroy6c();
                 }
             });
-        } else if (tagType == R.id.gb) {
+        } /*else if (tagType == R.id.gb) {
             view = inflater.inflate(R.layout.destory_gb_item, container, false);
             cus_gb_destroy = view.findViewById(R.id.cus_gb_destroy);
             cus_gb_destroy.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +58,7 @@ public class DestroyFragment extends Fragment {
                     destroyGb();
                 }
             });
-        }
+        }*/
         ButterKnife.bind(this, view);
         return view;
     }

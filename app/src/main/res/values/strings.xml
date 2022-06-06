@@ -391,7 +391,7 @@
     <string name="cus_gb_start">Start(word):</string>
     <string name="cus_lock_area">LockArea:</string>
 
-    <string name="arabic">العربية</string>
+    <string name="arabic" translatable="false">العربية</string>
     <string name="english">English</string>
     <string name="upgrade_complete">Upgrade is complete</string>
     <string name="notSerial">Cannot find serial port</string>
@@ -415,19 +415,37 @@
     <string name="calibration_power">Power:</string>
 
     <string name="upgrade_permission">The permissions required to read the upgrade file</string>
-    <string name="continue_as_admin">صيانة</string>
-    <string name="continue_as_client">مستخدم</string>
-    <string name="willcome">أهلا وسهلا</string>
-    <string name="login_as_admin">تسجيل الدخول كمدير</string>
-    <string name="login">تسجيل الدخول</string>
-    <string name="user_name">اسم المستخدم</string>
-    <string name="pass_worde">كلمة المرور</string>
+    <string name="continue_as_admin">Administrator</string>
+    <string name="continue_as_client">User</string>
+    <string name="willcome">Welcome</string>
+    <string name="login_as_admin">Login as administrator</string>
+    <string name="login">Login</string>
+    <string name="user_name">username</string>
+    <string name="pass_worde">passWord</string>
     <string name="program_jewellery">برنامج جرد الخازن الجوهرة</string>
-    <string name="wrong_user_or_Pass">اسم المستخدم أو كلمة المرور غير صحيحة</string>
-    <string name="language">العربية</string>
-    <string name="change_langue">تغيير اللغة</string>
-    <string name="not_connected">غير متصل</string>
-    <string name="connect_rfid_fail">فشل الاتصال بالماسح</string>
-    <string name="connect_rfid_success">نجح الاتصال بجهاز المسح</string>
+    <string name="wrong_user_or_Pass">Incorrect username or password</string>
+    <string name="change_langue">change Language</string>
+    <string name="not_connected">not connect</string>
+
+    <string name="connect_rfid_fail">connected failed with scanning device</string>
+    <string name="connect_rfid_success"> connected with scanning device</string>
+    <string name="smart_scan">smart scan</string>
+    <string name="inventory_saed">warehouse inventory</string>
+    <string name="scan">scan</string>
+    <string name="setting">settings</string>
+    <string name="ip_config">ip config</string>
+    <string name="save">save</string>
+    <string name="languge_btn">العربية</string>
+    <string name="done">done</string>
+
+    <string name="done_scan">scaned : </string>
+    <string name="expected">expected : </string>
+    <string name="not_found">Not found : </string>
+    <string name="undefined">undefined : </string>
+    <string name="language">language</string>
+
+
+
+    <string name="pleas_select_language">select</string>
 </resources>
 

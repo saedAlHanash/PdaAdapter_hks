@@ -1,25 +1,23 @@
-package com.example.gxwl.rederdemo.SAED;
+package com.example.gxwl.rederdemo.SAED.UI.Fragments.Auth;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Pair;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.EntryActivity;
 import com.example.gxwl.rederdemo.R;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginFragment extends Fragment {
 
     @BindView(R.id.login1)
     Button login;
@@ -30,12 +28,16 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.password)
     EditText password;
 
+    View view;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_login, container, false);
+        ButterKnife.bind(this, view);
+
         listeners();
+
+        return view;
     }
 
     void listeners() {
@@ -48,29 +50,22 @@ public class LoginActivity extends AppCompatActivity {
             String p = password.getText().toString();
             if (u.equals("admin") && p.equals("admin"))
                 startEntryActivity();
-
-//                for (int i = 0; i < users.size(); i++) {
-//                    if (u.equals(users.get(i).first) && p.equals(users.get(i).second)) {
-//                        startEntryActivity();
-//                        return;
-//                   }
-//                }
             else
-                Toast.makeText(this, getResources().getString(R.string.wrong_user_or_Pass), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getResources().getString(R.string.wrong_user_or_Pass), Toast.LENGTH_SHORT).show();
 
         }
     };
 
     void startEntryActivity() {
-        Intent intent = new Intent(this, EntryActivity.class);
+        Intent intent = new Intent(requireActivity(), EntryActivity.class);
         intent.putExtra("key", "admin");
         startActivity(intent);
-        this.finish();
     }
 
     /**
      * checking if username or password not empty
      */
+
     boolean checkFields() {
         if (username.getText().length() == 0) {
             username.setError("حقل فارغ");
@@ -82,4 +77,5 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
+
 }

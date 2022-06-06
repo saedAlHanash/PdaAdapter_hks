@@ -1,11 +1,10 @@
-package com.example.gxwl.rederdemo.SAED;
+package com.example.gxwl.rederdemo.SAED.UI.Activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Pair;
 
 import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.R;
