@@ -88,11 +88,9 @@ public class ClientFragment extends Fragment {
     //初始化连接
     public void initConnected() {
         String hks = "/dev/ttysWK0:115200";
-
         HksPower.uhf_power(1);
 
-        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 100)) { // FIXME: 31/05/2022  freeWait 100
-//        if (GlobalClient.getClient().openAndroidSerial(hks, 0)) {
+        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 0)) {
             isClient = true;
             ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
         } else {

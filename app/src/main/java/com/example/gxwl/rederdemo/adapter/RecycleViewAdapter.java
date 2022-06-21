@@ -24,11 +24,10 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     private Integer thisPosition = null;
     public boolean threadKill = true;
     public int lastIndexSent;
+    public Thread thread;
+    boolean newDataWhenThreadSendData = false;
 
     Activity activity;
-    public Thread thread;
-
-    boolean newDataWhenThreadSendData = false;
 
     public Integer getThisPosition() {
         return thisPosition;
@@ -57,6 +56,10 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
                 for (int i = lastIndexSent; i < mTagList.size(); i++) {
 
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException ignored) {
+                    }
                     if (((ReadOrWriteActivity) activity).socketClient.isConnected()) {//يوجد اتصال
 
                         lastIndexSent += 1;

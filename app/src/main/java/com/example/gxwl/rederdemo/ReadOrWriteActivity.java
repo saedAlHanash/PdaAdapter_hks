@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.SAED.Network.SocketClient;
 import com.example.gxwl.rederdemo.adapter.RecycleViewAdapter;
@@ -56,6 +57,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 @SuppressLint("NonConstantResourceId")
 public class ReadOrWriteActivity extends AppCompatActivity {
     // region 组件变量
@@ -204,40 +206,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         }
         initRecycleView();
         UtilSound.initSoundPool(this);
-
-//        new Handler(getMainLooper()).postDelayed(() -> {
-//
-//
-//            for (int i = 0; i < 20; i++) {
-//                TagInfo info = new TagInfo();
-//                info.setIndex(123L);
-//                info.setUserData("2223333333333");
-//                info.setReservedData("3333333333333333");
-//                info.setCount(3243l);
-//                info.setType("6c");
-//                info.setRssi("123");
-//                info.setEpc(i + "");
-//                tagInfoList.add(info);
-//            }
-//            adapter.notifyData(tagInfoList);
-//        }, 5000);
-//
-//        new Handler(getMainLooper()).postDelayed(() -> {
-//
-//            for (int i = 0; i < 20; i++) {
-//                TagInfo info = new TagInfo();
-//                info.setIndex(123L);
-//                info.setUserData("3333("3333333333333333");
-//                info.setCount(3243l);
-//                info.setType("6c");
-//                info.setRssi("123");
-//                info.setEpc(i * 2 + "");
-//                tagInfoList.add(info);
-//            }
-//            adapter.notifyData(tagInfoList);
-//        }, 10000);
-
-
     }
 
     //saed :
@@ -264,6 +232,23 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void computedSpeed() {
+        Runnable runnable = new Runnable() {
+            public void run() {
+                synchronized (tagInfoList) {
+
+                    tagInfoList.clear();
+                    tagInfoList.addAll(tagInfoMap.values());
+                    adapter.notifyData(tagInfoList);
+
+                    mHandler.postDelayed(this, 1000L);
+                }
+            }
+        };
+        this.r = runnable;
+        this.mHandler.postDelayed(runnable, 1000L);
     }
 
     /**
@@ -319,12 +304,13 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         client.onTagEpcLog = (readerName, info) -> {
             if (null != info && 0 == info.getResult()) {
                 ReadOrWriteActivity.this.runOnUiThread(() -> {
-                    Map<String, TagInfo> infoMap = ReadOrWriteActivity.this.pooled6cData(info);
-                    tagInfoList.clear();
-                    tagInfoList.addAll(infoMap.values());
+                    synchronized (tagInfoList) {
+                        pooled6cData(info);
+                    }
                 });
             }
         };
+
         client.onTagEpcOver = (readerName, info) -> {
             handlerStop.sendEmptyMessage(new Message().what = 1);
         };
@@ -388,6 +374,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                 } else {
                     msg.setInventoryMode(EnumG.InventoryMode_Inventory);
                 }
+
                 if (isChecked[0]) {
                     tidParam = new ParamEpcReadTid();
                     tidParam.setMode(EnumG.ParamTidMode_Auto);
@@ -412,6 +399,8 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                 if (0x00 == msg.getRtCode()) {
                     ToastUtils.showText("Start ReadCard");
                     isReader = true;
+                    computedSpeed();
+                    soundTask();
                 } else {
                     handlerStop.sendEmptyMessage(1);
                     ToastUtils.showText(msg.getRtMsg());
@@ -423,6 +412,23 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         } else {
             ToastUtils.showText(getResources().getString(R.string.ununited));
         }
+    }
+
+    private Runnable timeTask = null;
+    private final Handler soundHandler = new Handler();
+    long rateValue = 0L;
+
+    private void soundTask() {
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+                if (rateValue != 0L)
+                    UtilSound.play(1, 0);
+                soundHandler.postDelayed(this, 20L);
+            }
+        };
+        this.timeTask = runnable;
+        this.soundHandler.postDelayed(runnable, 0L);
     }
 
     //停止
@@ -634,22 +640,13 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     @SuppressLint("HandlerLeak")
     final Handler handlerStop = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    ToastUtils.showText("stop reading");
-                    upDataPane();
-                    isReader = false;
-                    break;
-                case 2:
-                    ThreadPoolUtils.run(() -> {
-                        if (isSound)
-                            UtilSound.play(1, 0);
-                    });
-                    break;
+        public void handleMessage(Message param1Message) {
+            if (param1Message.what == 1) {
+                mHandler.removeCallbacks(r);
+                soundHandler.removeCallbacks(timeTask);
+                upDataPane();
             }
-            super.handleMessage(msg);
+            super.handleMessage(param1Message);
         }
     };
 
@@ -671,13 +668,9 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-//        ToastUtils.showText(keyCode + "");
         Log.e("onKeyUp", keyCode + "");
         return super.onKeyUp(keyCode, event);
     }
 
-    // @Override
-    // protected void attachBaseContext(Context newBase) {
-    //      super.attachBaseContext(LocalManageUtil.setLocal(newBase));
-    //   }
+
 }

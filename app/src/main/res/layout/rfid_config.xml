@@ -89,7 +89,7 @@
                 android:layout_marginTop="@dimen/layout_marginTop_10"
                 android:layout_toRightOf="@+id/text_inventory"
                 android:entries="@array/inventory"
-                android:theme="@style/itemSpinnerStyle"></Spinner>
+                android:theme="@style/itemSpinnerStyle"/>
 
             <Button
                 android:id="@+id/base_query"

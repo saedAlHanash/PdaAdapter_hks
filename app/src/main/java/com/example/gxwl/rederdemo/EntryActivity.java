@@ -182,8 +182,7 @@ public class EntryActivity extends AppCompatActivity {
     public void initConnected() {
         String hks = "/dev/ttysWK0:115200";
         HksPower.uhf_power(1);
-        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 100)) {
-//        if (GlobalClient.getClient().openAndroidSerial(hks, 0)) {
+        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 0)) {
             isClient = true;
             ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
         } else {
@@ -196,9 +195,9 @@ public class EntryActivity extends AppCompatActivity {
     public void readOrWrite() {
         if (isClient) {
 
-        Intent intent = new Intent(this, ReadOrWriteActivity.class);
-        intent.putExtra("isClient", isClient);
-        startActivity(intent);
+            Intent intent = new Intent(this, ReadOrWriteActivity.class);
+            intent.putExtra("isClient", isClient);
+            startActivity(intent);
 
         } else {
             ToastUtils.showText(getResources().getString(R.string.ununited));

@@ -51,7 +51,7 @@ public class SocketClient {
      */
     private void initPrintWriter() throws IOException {
         mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-        mBufferOut.println("connected with" + socket.getLocalAddress().getHostName() + socket.getPort()); // ارسال من اتصل للسيرفر
+//        mBufferOut.println("connected with" + socket.getLocalAddress().getHostName() + socket.getPort()); // ارسال من اتصل للسيرفر
     }
 
     /**
@@ -164,7 +164,7 @@ public class SocketClient {
             return;
 
         mBufferOut.println(message);
-//        mBufferOut.flush();
+        mBufferOut.flush();
     }
 
     /**
@@ -198,7 +198,7 @@ public class SocketClient {
         new Thread(() ->
         {
             try {
-                mBufferOut.println("close connect" + socket.getLocalAddress().getHostName() + socket.getPort());
+//                mBufferOut.println("close connect" + socket.getLocalAddress().getHostName() + socket.getPort());
                 socket.close();
                 mBufferOut.close();
                 finalIn.close();
