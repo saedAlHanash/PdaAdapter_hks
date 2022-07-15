@@ -36,8 +36,8 @@
     <color name="red">#F10303</color>
     <color name="light_gray">#F5F5F5</color>
     <color name="light_gray_alpha">#CCF1F1F1</color>
-    <color name="light_bg">#E8E3E3</color>
     <color name="transparency_gray">#CCF1F1F1</color>
+    <color name="light_bg">#E8E3E3</color>
     <color name="orange">#EDB100</color>
     <color name="blur">#F1F1F1</color>
     <color name="off_white">#F1F1F1</color>

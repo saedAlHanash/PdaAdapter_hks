@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.ReadOrWriteActivity;
 import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.ToastUtils;
+import com.gg.reader.api.dal.HandlerDebugLog;
 import com.gg.reader.api.utils.HksPower;
 
 import java.util.Locale;
@@ -87,16 +89,35 @@ public class ClientFragment extends Fragment {
 
     //初始化连接
     public void initConnected() {
-        String hks = "/dev/ttysWK0:115200";
-        HksPower.uhf_power(1);
 
-        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 0)) {
-            isClient = true;
-            ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
+        if (GlobalClient.getClient().
+                openCusAndroidSerial("/dev/ttysWK0:115200", 64, 0)) {
+            this.isClient = true;
+
+            GlobalClient.getClient().debugLog = new HandlerDebugLog() {
+
+                public void receiveDebugLog(String param1String) {
+                    Log.e("receive", param1String);
+                }
+
+                public void sendDebugLog(String param1String) {
+                    Log.e("send", param1String);
+                }
+            };
         } else {
-            isClient = false;
-            ToastUtils.showText(getResources().getString(R.string.connect_rfid_fail));
+            this.isClient = false;
         }
+
+//        String hks = "/dev/ttysWK0:115200";
+//        HksPower.uhf_power(1);
+//
+//        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 0)) {
+//            isClient = true;
+//            ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
+//        } else {
+//            isClient = false;
+//            ToastUtils.showText(getResources().getString(R.string.connect_rfid_fail));
+//        }
     }
 
     void startReadOrWriteActivity() {

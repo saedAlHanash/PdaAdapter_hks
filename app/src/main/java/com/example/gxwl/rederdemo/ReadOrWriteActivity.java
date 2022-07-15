@@ -30,14 +30,28 @@ import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.ToastUtils;
 import com.example.gxwl.rederdemo.util.UtilSound;
 import com.gg.reader.api.dal.GClient;
+import com.gg.reader.api.dal.HandlerDebugLog;
 import com.gg.reader.api.dal.HandlerGpiOver;
 import com.gg.reader.api.dal.HandlerGpiStart;
+import com.gg.reader.api.dal.HandlerTag6bLog;
+import com.gg.reader.api.dal.HandlerTag6bOver;
+import com.gg.reader.api.dal.HandlerTagEpcLog;
+import com.gg.reader.api.dal.HandlerTagEpcOver;
+import com.gg.reader.api.dal.HandlerTagGJbLog;
+import com.gg.reader.api.dal.HandlerTagGJbOver;
+import com.gg.reader.api.dal.HandlerTagGbLog;
+import com.gg.reader.api.dal.HandlerTagGbOver;
 import com.gg.reader.api.protocol.gx.EnumG;
 import com.gg.reader.api.protocol.gx.LogAppGpiOver;
 import com.gg.reader.api.protocol.gx.LogAppGpiStart;
 import com.gg.reader.api.protocol.gx.LogBase6bInfo;
+import com.gg.reader.api.protocol.gx.LogBase6bOver;
 import com.gg.reader.api.protocol.gx.LogBaseEpcInfo;
+import com.gg.reader.api.protocol.gx.LogBaseEpcOver;
+import com.gg.reader.api.protocol.gx.LogBaseGJbInfo;
+import com.gg.reader.api.protocol.gx.LogBaseGJbOver;
 import com.gg.reader.api.protocol.gx.LogBaseGbInfo;
+import com.gg.reader.api.protocol.gx.LogBaseGbOver;
 import com.gg.reader.api.protocol.gx.MsgBaseInventoryEpc;
 import com.gg.reader.api.protocol.gx.MsgBaseStop;
 import com.gg.reader.api.protocol.gx.Param6bReadUserdata;
@@ -52,6 +66,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 import butterknife.BindView;
@@ -201,9 +216,10 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
         listeners();
 
-        if (isClient) {
+        if (isClient)
             subHandler(GlobalClient.getClient());
-        }
+
+
         initRecycleView();
         UtilSound.initSoundPool(this);
     }
@@ -221,7 +237,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
                 if (i == 0)
                     typeScanTv.setText(getResources().getString(R.string.single));
-
                 else
                     typeScanTv.setText(getResources().getString(R.string.loop));
             }
@@ -231,7 +246,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private void computedSpeed() {
@@ -243,12 +257,12 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                     tagInfoList.addAll(tagInfoMap.values());
                     adapter.notifyData(tagInfoList);
 
-                    mHandler.postDelayed(this, 1000L);
+                    mHandler.postDelayed(this, 100L);
                 }
             }
         };
         this.r = runnable;
-        this.mHandler.postDelayed(runnable, 1000L);
+        this.mHandler.postDelayed(runnable, 100L);
     }
 
     /**
@@ -265,6 +279,8 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                 if (socketClient.connect(mIp, mPort)) {
                     //اخفاء noConnect textView
                     runOnUiThread(() -> notConnectTv.setVisibility(View.GONE));
+                    this.tryConnect = false;
+
                     break;
                 } else // اذا لم يتصل
                     try {
@@ -278,6 +294,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
         //call back active when connect stat change
         socketClient.setOnChangeConnectStatListener(connect -> {
+            // use UI case this call back from background thread
             runOnUiThread(() -> {
                 if (connect)
                     notConnectTv.setVisibility(View.GONE);
@@ -299,21 +316,197 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     }
 
+
+    //读卡
+    @OnClick(R.id.read)
+    public void readCard() {
+        if (isClient) {
+            if (!isReader) {
+
+                //   if (type.getCheckedRadioButtonId() == R.id.c) {
+                MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
+                msg.setAntennaEnable(EnumG.AntennaNo_1);
+                if (typeScan == SINGLE) {
+                    msg.setInventoryMode(EnumG.InventoryMode_Single);
+                } else {
+                    msg.setInventoryMode(EnumG.InventoryMode_Inventory);
+                }
+
+                if (isChecked[0]) {
+                    tidParam = new ParamEpcReadTid();
+                    tidParam.setMode(EnumG.ParamTidMode_Auto);
+                    tidParam.setLen(6);
+                    msg.setReadTid(tidParam);
+                }
+                if (isChecked[1]) {
+                    userParam = new ParamEpcReadUserdata();
+                    userParam.setStart(0);
+                    userParam.setLen(6);
+                    msg.setReadUserdata(userParam);
+                }
+                if (isChecked[2]) {
+                    reserveParam = new ParamEpcReadReserved();
+                    reserveParam.setStart(0);
+                    reserveParam.setLen(4);
+                    msg.setReadReserved(reserveParam);
+                }
+
+                client.sendSynMsg(msg);
+
+                if (0x00 == msg.getRtCode()) {
+                    ToastUtils.showText("Start ReadCard");
+                    isReader = true;
+                    computedSpeed();
+                    soundTask();
+
+                } else {
+                    handlerStop.sendEmptyMessage(1);
+                    ToastUtils.showText(msg.getRtMsg());
+                }
+            } else {
+                ToastUtils.showText(getResources().getString(R.string.read_card_being));
+            }
+        } else {
+            ToastUtils.showText(getResources().getString(R.string.ununited));
+        }
+    }
+
+    private Runnable timeTask = null;
+    private final Handler soundHandler = new Handler();
+    long rateValue = 1L;
+
+    private void soundTask() {
+        Runnable runnable = new Runnable() {
+            public void run() {
+                if (rateValue != 0L)
+                    UtilSound.play(1, 0);
+                soundHandler.postDelayed(this, 20L);
+            }
+        };
+        this.timeTask = runnable;
+        this.soundHandler.postDelayed(runnable, 0L);
+    }
+
+    //停止
+    @OnClick(R.id.stop)
+    public void stopRead() {
+        if (isClient) {
+            MsgBaseStop msgStop = new MsgBaseStop();
+            client.sendSynMsg(msgStop);
+            if (0x00 == msgStop.getRtCode()) {
+                isReader = false;
+                ToastUtils.showText("Stop Success");
+            } else
+                ToastUtils.showText("Stop Fail");
+
+        } else
+            ToastUtils.showText(getResources().getString(R.string.ununited));
+
+    }
+
+    //清屏
+    @OnClick(R.id.clean)
+    public void cleanData() {
+        if (isClient) {
+            tagInfoList.clear();
+            adapter.notifyData(tagInfoList);
+//            initPane();
+        } else {
+            ToastUtils.showText(getResources().getString(R.string.ununited));
+        }
+    }
+
     //订阅
     public void subHandler(GClient client) {
-        client.onTagEpcLog = (readerName, info) -> {
-            if (null != info && 0 == info.getResult()) {
-                ReadOrWriteActivity.this.runOnUiThread(() -> {
+
+        client.onTagEpcLog = new HandlerTagEpcLog() {
+            public void log(String readerName, LogBaseEpcInfo info) {
+                if (info.getResult() == 0)
                     synchronized (tagInfoList) {
                         pooled6cData(info);
                     }
-                });
+            }
+        };
+        client.onTagEpcOver = new HandlerTagEpcOver() {
+            public void log(String param1String, LogBaseEpcOver param1LogBaseEpcOver) {
+                handlerStop.sendEmptyMessage(1);
             }
         };
 
-        client.onTagEpcOver = (readerName, info) -> {
-            handlerStop.sendEmptyMessage(new Message().what = 1);
+        client.onTag6bLog = new HandlerTag6bLog() {
+            public void log(String param1String, LogBase6bInfo param1LogBase6bInfo) {
+                if (param1LogBase6bInfo != null && param1LogBase6bInfo.getResult() == 0)
+                    synchronized (tagInfoList) {
+                        pooled6bData(param1LogBase6bInfo);
+                    }
+            }
         };
+        client.onTag6bOver = new HandlerTag6bOver() {
+            public void log(String param1String, LogBase6bOver param1LogBase6bOver) {
+                handlerStop.sendEmptyMessage(1);
+            }
+        };
+        client.onTagGbLog = new HandlerTagGbLog() {
+            public void log(String param1String, LogBaseGbInfo param1LogBaseGbInfo) {
+                if (param1LogBaseGbInfo != null && param1LogBaseGbInfo.getResult() == 0)
+                    synchronized (tagInfoList) {
+                        pooledGbData(param1LogBaseGbInfo);
+                    }
+            }
+        };
+        client.onTagGbOver = new HandlerTagGbOver() {
+            public void log(String param1String, LogBaseGbOver param1LogBaseGbOver) {
+                Log.e("HandlerTagGbOver", "-------------HandlerTagGbOver");
+                handlerStop.sendEmptyMessage(1);
+            }
+        };
+        client.onTagGJbLog = new HandlerTagGJbLog() {
+            public void log(String param1String, LogBaseGJbInfo param1LogBaseGJbInfo) {
+                if (param1LogBaseGJbInfo.getResult() == 0)
+                    synchronized (tagInfoList) {
+                        pooledGJbData(param1LogBaseGJbInfo);
+                    }
+            }
+        };
+        client.onTagGJbOver = new HandlerTagGJbOver() {
+            public void log(String param1String, LogBaseGJbOver param1LogBaseGJbOver) {
+                Log.e("HandlerTagGJbOver", "-------------HandlerTagGJbOver");
+                handlerStop.sendEmptyMessage(1);
+            }
+        };
+        client.onGpiOver = new HandlerGpiOver() {
+            public void log(String param1String, LogAppGpiOver param1LogAppGpiOver) {
+                System.out.println(param1LogAppGpiOver);
+            }
+        };
+        client.onGpiStart = new HandlerGpiStart() {
+            public void log(String param1String, LogAppGpiStart param1LogAppGpiStart) {
+                System.out.println(param1LogAppGpiStart);
+            }
+        };
+        client.debugLog = new HandlerDebugLog() {
+            public void receiveDebugLog(String param1String) {
+                Log.e("receiveDebugLog", param1String);
+            }
+
+            public void sendDebugLog(String param1String) {
+                Log.e("sendDebugLog", param1String);
+            }
+        };
+
+//        client.onTagEpcLog = (readerName, info) -> {
+//            if (null != info && 0 == info.getResult()) {
+//                ReadOrWriteActivity.this.runOnUiThread(() -> {
+//                    synchronized (tagInfoList) {
+//                        pooled6cData(info);
+//                    }
+//                });
+//            }
+//        };
+
+//        client.onTagEpcOver = (readerName, info) -> {
+//            handlerStop.sendEmptyMessage(new Message().what = 1);
+//        };
 
 //        client.onTag6bLog = (readerName, info) -> {
 //            if (null != info && info.getResult() == 0) {
@@ -360,137 +553,53 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 //        };
     }
 
-    //读卡
-    @OnClick(R.id.read)
-    public void readCard() {
-        if (isClient) {
-            if (!isReader) {
-
-                //   if (type.getCheckedRadioButtonId() == R.id.c) {
-                MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
-                msg.setAntennaEnable(EnumG.AntennaNo_1);
-                if (typeScan == SINGLE) {
-                    msg.setInventoryMode(EnumG.InventoryMode_Single);
-                } else {
-                    msg.setInventoryMode(EnumG.InventoryMode_Inventory);
-                }
-
-                if (isChecked[0]) {
-                    tidParam = new ParamEpcReadTid();
-                    tidParam.setMode(EnumG.ParamTidMode_Auto);
-                    tidParam.setLen(6);
-                    msg.setReadTid(tidParam);
-                }
-                if (isChecked[1]) {
-                    userParam = new ParamEpcReadUserdata();
-                    userParam.setStart(0);
-                    userParam.setLen(6);
-                    msg.setReadUserdata(userParam);
-                }
-                if (isChecked[2]) {
-                    reserveParam = new ParamEpcReadReserved();
-                    reserveParam.setStart(0);
-                    reserveParam.setLen(4);
-                    msg.setReadReserved(reserveParam);
-                }
-
-                client.sendSynMsg(msg);
-
-                if (0x00 == msg.getRtCode()) {
-                    ToastUtils.showText("Start ReadCard");
-                    isReader = true;
-                    computedSpeed();
-                    soundTask();
-                } else {
-                    handlerStop.sendEmptyMessage(1);
-                    ToastUtils.showText(msg.getRtMsg());
-                }
-
-            } else {
-                ToastUtils.showText(getResources().getString(R.string.read_card_being));
-            }
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
-    }
-
-    private Runnable timeTask = null;
-    private final Handler soundHandler = new Handler();
-    long rateValue = 0L;
-
-    private void soundTask() {
-
-        Runnable runnable = new Runnable() {
-            public void run() {
-                if (rateValue != 0L)
-                    UtilSound.play(1, 0);
-                soundHandler.postDelayed(this, 20L);
-            }
-        };
-        this.timeTask = runnable;
-        this.soundHandler.postDelayed(runnable, 0L);
-    }
-
-    //停止
-    @OnClick(R.id.stop)
-    public void stopRead() {
-        if (isClient) {
-            MsgBaseStop msgStop = new MsgBaseStop();
-            client.sendSynMsg(msgStop);
-            if (0x00 == msgStop.getRtCode()) {
-                isReader = false;
-                ToastUtils.showText("Stop Success");
-            } else {
-                ToastUtils.showText("Stop Fail");
-            }
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
-    }
-
-    //清屏
-    @OnClick(R.id.clean)
-    public void cleanData() {
-        if (isClient) {
-            tagInfoList.clear();
-            adapter.notifyData(tagInfoList);
-//            initPane();
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
-    }
-
     //去重6C
-    // FIXME: 28/05/2022  هون عم تصير تعبة ال map
-    public Map<String, TagInfo> pooled6cData(LogBaseEpcInfo info) {
-
-        if (tagInfoMap.containsKey(info.getTid() + info.getEpc())) {
-            TagInfo tagInfo = tagInfoMap.get(info.getTid() + info.getEpc());
-            Long count = tagInfoMap.get(info.getTid() + info.getEpc()).getCount();
-            count++;
-            tagInfo.setRssi(info.getRssi() + "");
-            tagInfo.setReservedData(info.getReserved());
-            tagInfo.setUserData(info.getUserdata());
-            tagInfo.setCount(count);
-            tagInfoMap.put(info.getTid() + info.getEpc(), tagInfo);
+    public Map<String, TagInfo> pooled6cData(LogBaseEpcInfo paramLogBaseEpcInfo) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(paramLogBaseEpcInfo.getTid());
+        stringBuilder.append(paramLogBaseEpcInfo.getEpc());
+        if (this.tagInfoMap.containsKey(stringBuilder.toString())) {
+            String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
+                    paramLogBaseEpcInfo.getEpc();
+            TagInfo tagInfo = this.tagInfoMap.get(stringBuilder1);
+            Map<String, TagInfo> map2 = this.tagInfoMap;
+            StringBuilder stringBuilder2 = new StringBuilder();
+            stringBuilder2.append(paramLogBaseEpcInfo.getTid());
+            stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
+            long l = ((TagInfo) Objects.requireNonNull(map2.get(stringBuilder2.toString()))).getCount();
+            stringBuilder2 = new StringBuilder();
+            stringBuilder2.append(paramLogBaseEpcInfo.getRssi());
+            stringBuilder2.append("");
+            tagInfo.setRssi(stringBuilder2.toString());
+            tagInfo.setReservedData(paramLogBaseEpcInfo.getReserved());
+            tagInfo.setUserData(paramLogBaseEpcInfo.getUserdata());
+            tagInfo.setCount(l + 1L);
+            map2 = this.tagInfoMap;
+            stringBuilder2 = new StringBuilder();
+            stringBuilder2.append(paramLogBaseEpcInfo.getTid());
+            stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
+            map2.put(stringBuilder2.toString(), tagInfo);
         } else {
-            TagInfo tag = new TagInfo();
-            tag.setIndex(index);
-            tag.setType("6C");
-            tag.setEpc(info.getEpc());
-            tag.setCount(1l);
-            tag.setUserData(info.getUserdata());
-            tag.setReservedData(info.getReserved());
-            tag.setTid(info.getTid());
-            tag.setRssi(info.getRssi() + "");
-            tag.setReadTime(new Date());
-            tagInfoMap.put(info.getTid() + info.getEpc(), tag);
-            index++;
+            TagInfo tagInfo = new TagInfo();
+            tagInfo.setIndex(this.index);
+            tagInfo.setType("6C");
+            tagInfo.setEpc(paramLogBaseEpcInfo.getEpc());
+            tagInfo.setCount(1L);
+            tagInfo.setUserData(paramLogBaseEpcInfo.getUserdata());
+            tagInfo.setReservedData(paramLogBaseEpcInfo.getReserved());
+            tagInfo.setTid(paramLogBaseEpcInfo.getTid());
+            stringBuilder = new StringBuilder();
+            stringBuilder.append(paramLogBaseEpcInfo.getRssi());
+            stringBuilder.append("");
+            tagInfo.setRssi(stringBuilder.toString());
+            tagInfo.setReadTime(new Date());
+            String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
+                    paramLogBaseEpcInfo.getEpc();
+            this.tagInfoMap.put(stringBuilder1, tagInfo);
+            this.index = this.index + 1L;
         }
 
-        handlerStop.sendEmptyMessage(2);//تشغيل الصوت
-
-        return tagInfoMap;
+        return this.tagInfoMap;
     }
 
     //去重6B
@@ -515,7 +624,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             tagInfoMap.put(info.getTid(), tag);
             index++;
         }
-        handlerStop.sendEmptyMessage(2);
+        handlerStop.sendEmptyMessage(1);
         return tagInfoMap;
     }
 
@@ -540,8 +649,58 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             tagInfoMap.put(info.getTid() + info.getEpc(), tag);
             index++;
         }
-        handlerStop.sendEmptyMessage(2);
+        handlerStop.sendEmptyMessage(1);
         return tagInfoMap;
+    }
+
+
+    public Map<String, TagInfo> pooledGJbData(LogBaseGJbInfo paramLogBaseGJbInfo) {
+        Map<String, TagInfo> map = this.tagInfoMap;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(paramLogBaseGJbInfo.getTid());
+        stringBuilder.append(paramLogBaseGJbInfo.getEpc());
+        if (map.containsKey(stringBuilder.toString())) {
+            map = this.tagInfoMap;
+            stringBuilder = new StringBuilder();
+            stringBuilder.append(paramLogBaseGJbInfo.getTid());
+            stringBuilder.append(paramLogBaseGJbInfo.getEpc());
+            TagInfo tagInfo = map.get(stringBuilder.toString());
+            Map<String, TagInfo> map2 = this.tagInfoMap;
+            StringBuilder stringBuilder2 = new StringBuilder();
+            stringBuilder2.append(paramLogBaseGJbInfo.getTid());
+            stringBuilder2.append(paramLogBaseGJbInfo.getEpc());
+            long l = ((TagInfo) map2.get(stringBuilder2.toString())).getCount().longValue();
+            StringBuilder stringBuilder1 = new StringBuilder();
+            stringBuilder1.append(paramLogBaseGJbInfo.getRssi());
+            stringBuilder1.append("");
+            tagInfo.setRssi(stringBuilder1.toString());
+            tagInfo.setCount(Long.valueOf(l + 1L));
+            Map<String, TagInfo> map1 = this.tagInfoMap;
+            stringBuilder2 = new StringBuilder();
+            stringBuilder2.append(paramLogBaseGJbInfo.getTid());
+            stringBuilder2.append(paramLogBaseGJbInfo.getEpc());
+            map1.put(stringBuilder2.toString(), tagInfo);
+        } else {
+            TagInfo tagInfo = new TagInfo();
+            tagInfo.setIndex(this.index);
+            tagInfo.setType("GJB");
+            tagInfo.setEpc(paramLogBaseGJbInfo.getEpc());
+            tagInfo.setCount(Long.valueOf(1L));
+            tagInfo.setUserData(paramLogBaseGJbInfo.getUserdata());
+            tagInfo.setTid(paramLogBaseGJbInfo.getTid());
+            stringBuilder = new StringBuilder();
+            stringBuilder.append(paramLogBaseGJbInfo.getRssi());
+            stringBuilder.append("");
+            tagInfo.setRssi(stringBuilder.toString());
+            tagInfo.setReadTime(new Date());
+            Map<String, TagInfo> map1 = this.tagInfoMap;
+            StringBuilder stringBuilder1 = new StringBuilder();
+            stringBuilder1.append(paramLogBaseGJbInfo.getTid());
+            stringBuilder1.append(paramLogBaseGJbInfo.getEpc());
+            map1.put(stringBuilder1.toString(), tagInfo);
+            this.index = Long.valueOf(this.index.longValue() + 1L);
+        }
+        return this.tagInfoMap;
     }
 
 
@@ -565,7 +724,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
         adapter.threadKill = false;
         adapter.thread.interrupt();
-
+        rateValue = 0L;
         socketClient.close();
     }
 
@@ -577,6 +736,10 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                 MsgBaseStop msgStop = new MsgBaseStop();
                 client.sendSynMsg(msgStop);
                 if (msgStop.getRtCode() == 0) {
+
+                    mHandler.removeCallbacks(r);
+                    soundHandler.removeCallbacks(timeTask);
+                    upDataPane();
                     isReader = false;
                     ToastUtils.showText(getResources().getString(R.string.stop_card));
                 } else {
@@ -585,53 +748,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             }
         }
     }
-
-//    @OnClick(R.id.tabHead)
-//    public void getTabHead() {
-//        AlertDialog dialog = new AlertDialog.Builder(this)
-//                .setTitle(getResources().getString(R.string.select_type))
-//                .setMultiChoiceItems(new String[]{
-//                                getResources().getString(R.string.select_tid),
-//                                getResources().getString(R.string.select_user),
-//                                getResources().getString(R.string.select_reserve)},
-//                        isChecked,
-//                        (dialog1, which, isChecked) -> {
-//                            System.out.println(which + "--" + isChecked);
-//                        })
-//                .setCancelable(false)
-//                .setPositiveButton("confirm", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                    }
-//                })
-//                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                })
-//                .show();
-//        //修改“确认”、“取消”按钮的字体大小
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextSize(23);
-//        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextSize(23);
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.rgb(0, 87, 75));
-//        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.rgb(0, 87, 75));
-//        try {
-//            Field mAlert = AlertDialog.class.getDeclaredField("mAlert");
-//            mAlert.setAccessible(true);
-//            Object mAlertController = mAlert.get(dialog);
-//            //通过反射修改title字体大小和颜色
-//            Field mTitle = mAlertController.getClass().getDeclaredField("mTitleView");
-//            mTitle.setAccessible(true);
-//            TextView mTitleView = (TextView) mTitle.get(mAlertController);
-//            mTitleView.setTextSize(23);
-//            mTitleView.setTextColor(Color.rgb(0, 87, 75));
-//        } catch (IllegalAccessException e1) {
-//            e1.printStackTrace();
-//        } catch (NoSuchFieldException e2) {
-//            e2.printStackTrace();
-//        }
-//    }
 
 
     private void upDataPane() {

@@ -68,10 +68,9 @@ public class SettingsFragment extends Fragment {
 
 
     private final View.OnClickListener saveListener = v -> {
-
         saveAnt_power();
-
         saveInFile();
+
     };
 
     private void saveAnt_power() {

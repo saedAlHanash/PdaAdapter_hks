@@ -29,6 +29,7 @@ import com.example.gxwl.rederdemo.util.LocalManageUtil;
 import com.example.gxwl.rederdemo.util.SerialPortFinder;
 import com.example.gxwl.rederdemo.util.ToastUtils;
 import com.example.gxwl.rederdemo.util.UriUtils;
+import com.gg.reader.api.dal.HandlerDebugLog;
 import com.gg.reader.api.protocol.gx.MsgAppGetBaseVersion;
 import com.gg.reader.api.protocol.gx.MsgAppGetReaderInfo;
 import com.gg.reader.api.protocol.gx.MsgAppReset;
@@ -101,6 +102,14 @@ public class EntryActivity extends AppCompatActivity {
 //            LocalManageUtil.saveSelectLanguage(this, 0);
 //        }
 //        cusConnect();
+
+        Integer integer = LocalManageUtil.getSelectLanguage((Context)this);
+        if (integer != null) {
+            LocalManageUtil.saveSelectLanguage((Context)this, integer.intValue());
+        } else {
+            LocalManageUtil.saveSelectLanguage((Context)this, 0);
+        }
+
         initConnected();
     }
 
@@ -180,14 +189,32 @@ public class EntryActivity extends AppCompatActivity {
 
     //初始化连接
     public void initConnected() {
-        String hks = "/dev/ttysWK0:115200";
-        HksPower.uhf_power(1);
-        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 0)) {
-            isClient = true;
-            ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
+//        String hks = "/dev/ttysWK0:115200";
+//        HksPower.uhf_power(1);
+//        if (GlobalClient.getClient().openCusAndroidSerial(hks, 64, 0)) {
+//            isClient = true;
+//            ToastUtils.showText(getResources().getString(R.string.connect_rfid_success));
+//        } else {
+//            isClient = false;
+//            ToastUtils.showText(getResources().getString(R.string.connect_rfid_fail));
+//        }
+
+        if (GlobalClient.getClient().
+                openCusAndroidSerial("/dev/ttysWK0:115200", 64, 0)) {
+            this.isClient = true;
+
+            GlobalClient.getClient().debugLog = new HandlerDebugLog() {
+
+                public void receiveDebugLog(String param1String) {
+                    Log.e("receive", param1String);
+                }
+
+                public void sendDebugLog(String param1String) {
+                    Log.e("send", param1String);
+                }
+            };
         } else {
-            isClient = false;
-            ToastUtils.showText(getResources().getString(R.string.connect_rfid_fail));
+            this.isClient = false;
         }
     }
 
@@ -475,7 +502,6 @@ public class EntryActivity extends AppCompatActivity {
             Log.e(this.getClass().getName(), "onDestroy");
             GlobalClient.getClient().close();
         }
-        HksPower.uhf_power(0);
 
     }
 
