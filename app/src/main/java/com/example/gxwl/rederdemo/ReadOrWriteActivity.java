@@ -67,6 +67,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 
 import butterknife.BindView;
@@ -75,6 +76,7 @@ import butterknife.OnClick;
 
 @SuppressLint("NonConstantResourceId")
 public class ReadOrWriteActivity extends AppCompatActivity {
+
     // region 组件变量
 
     @BindView(R.id.read)
@@ -216,6 +218,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
         listeners();
 
+        handler = new Handler(getMainLooper());
         if (isClient)
             subHandler(GlobalClient.getClient());
 
@@ -257,12 +260,12 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                     tagInfoList.addAll(tagInfoMap.values());
                     adapter.notifyData(tagInfoList);
 
-                    mHandler.postDelayed(this, 100L);
+                    mHandler.postDelayed(this, 1000L);
                 }
             }
         };
         this.r = runnable;
-        this.mHandler.postDelayed(runnable, 100L);
+        this.mHandler.postDelayed(runnable, 1000L);
     }
 
     /**
@@ -316,59 +319,73 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     }
 
+    Handler handler;
+    private Runnable runnable;
 
     //读卡
     @OnClick(R.id.read)
     public void readCard() {
-        if (isClient) {
-            if (!isReader) {
 
-                //   if (type.getCheckedRadioButtonId() == R.id.c) {
-                MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
-                msg.setAntennaEnable(EnumG.AntennaNo_1);
-                if (typeScan == SINGLE) {
-                    msg.setInventoryMode(EnumG.InventoryMode_Single);
-                } else {
-                    msg.setInventoryMode(EnumG.InventoryMode_Inventory);
-                }
+        runnable = () -> {
+            int x = new Random().nextInt();
 
-                if (isChecked[0]) {
-                    tidParam = new ParamEpcReadTid();
-                    tidParam.setMode(EnumG.ParamTidMode_Auto);
-                    tidParam.setLen(6);
-                    msg.setReadTid(tidParam);
-                }
-                if (isChecked[1]) {
-                    userParam = new ParamEpcReadUserdata();
-                    userParam.setStart(0);
-                    userParam.setLen(6);
-                    msg.setReadUserdata(userParam);
-                }
-                if (isChecked[2]) {
-                    reserveParam = new ParamEpcReadReserved();
-                    reserveParam.setStart(0);
-                    reserveParam.setLen(4);
-                    msg.setReadReserved(reserveParam);
-                }
+            for (int i = 0; i < SharedPreference.getCount(); i++)
+                tagInfoList.add(new TagInfo(1L, "" + (x + i)));
 
-                client.sendSynMsg(msg);
-
-                if (0x00 == msg.getRtCode()) {
-                    ToastUtils.showText("Start ReadCard");
-                    isReader = true;
-                    computedSpeed();
-                    soundTask();
-
-                } else {
-                    handlerStop.sendEmptyMessage(1);
-                    ToastUtils.showText(msg.getRtMsg());
-                }
-            } else {
-                ToastUtils.showText(getResources().getString(R.string.read_card_being));
-            }
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
+            adapter.notifyData(tagInfoList);
+            handler.postDelayed(runnable, 1000);
+        };
+        handler.post(runnable);
+//        if (isClient) {
+//            if (!isReader) {
+//
+//                //   if (type.getCheckedRadioButtonId() == R.id.c) {
+//                MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
+//                msg.setAntennaEnable(EnumG.AntennaNo_1 | EnumG.AntennaNo_2);
+//                if (typeScan == SINGLE) {
+//                    msg.setInventoryMode(EnumG.InventoryMode_Single);
+//                } else {
+//                    msg.setInventoryMode(EnumG.InventoryMode_Inventory);
+//                }
+//
+//                if (isChecked[0]) {
+//                    tidParam = new ParamEpcReadTid();
+//                    tidParam.setMode(EnumG.ParamTidMode_Auto);
+//                    tidParam.setLen(6);
+//                    msg.setReadTid(tidParam);
+//                }
+//                if (isChecked[1]) {
+//                    userParam = new ParamEpcReadUserdata();
+//                    userParam.setStart(0);
+//                    userParam.setLen(6);
+//                    msg.setReadUserdata(userParam);
+//                }
+//                if (isChecked[2]) {
+//                    reserveParam = new ParamEpcReadReserved();
+//                    reserveParam.setStart(0);
+//                    reserveParam.setLen(4);
+//                    msg.setReadReserved(reserveParam);
+//                }
+//
+//                client.sendSynMsg(msg);
+//
+//                if (0x00 == msg.getRtCode()) {
+//                    ToastUtils.showText("Start ReadCard");
+//                    isReader = true;
+//
+//                    computedSpeed();
+//                    soundTask();
+//
+//                } else {
+//                    handlerStop.sendEmptyMessage(1);
+//                    ToastUtils.showText(msg.getRtMsg());
+//                }
+//            } else {
+//                ToastUtils.showText(getResources().getString(R.string.read_card_being));
+//            }
+//        } else {
+//            ToastUtils.showText(getResources().getString(R.string.ununited));
+//        }
     }
 
     private Runnable timeTask = null;
@@ -390,30 +407,35 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     //停止
     @OnClick(R.id.stop)
     public void stopRead() {
-        if (isClient) {
-            MsgBaseStop msgStop = new MsgBaseStop();
-            client.sendSynMsg(msgStop);
-            if (0x00 == msgStop.getRtCode()) {
-                isReader = false;
-                ToastUtils.showText("Stop Success");
-            } else
-                ToastUtils.showText("Stop Fail");
-
-        } else
-            ToastUtils.showText(getResources().getString(R.string.ununited));
+        handler.removeCallbacks(runnable);
+//        if (isClient) {
+//            MsgBaseStop msgStop = new MsgBaseStop();
+//            client.sendSynMsg(msgStop);
+//            if (0x00 == msgStop.getRtCode()) {
+//                isReader = false;
+//                ToastUtils.showText("Stop Success");
+//            } else
+//                ToastUtils.showText("Stop Fail");
+//
+//        } else
+//            ToastUtils.showText(getResources().getString(R.string.ununited));
 
     }
 
     //清屏
     @OnClick(R.id.clean)
     public void cleanData() {
-        if (isClient) {
-            tagInfoList.clear();
-            adapter.notifyData(tagInfoList);
-//            initPane();
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
+        adapter.lastIndexSent = 0;
+        tagInfoList.clear();
+        adapter.notifyData(tagInfoList);
+//        if (isClient) {
+//            tagInfoList.clear();
+//            adapter.notifyData(tagInfoList);
+//            adapter.lastIndexSent = 0;
+////            initPane();
+//        } else {
+//            ToastUtils.showText(getResources().getString(R.string.ununited));
+//        }
     }
 
     //订阅
@@ -427,6 +449,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                     }
             }
         };
+
         client.onTagEpcOver = new HandlerTagEpcOver() {
             public void log(String param1String, LogBaseEpcOver param1LogBaseEpcOver) {
                 handlerStop.sendEmptyMessage(1);
@@ -554,51 +577,31 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     }
 
     //去重6C
-    public Map<String, TagInfo> pooled6cData(LogBaseEpcInfo paramLogBaseEpcInfo) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(paramLogBaseEpcInfo.getTid());
-        stringBuilder.append(paramLogBaseEpcInfo.getEpc());
-        if (this.tagInfoMap.containsKey(stringBuilder.toString())) {
-            String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
-                    paramLogBaseEpcInfo.getEpc();
-            TagInfo tagInfo = this.tagInfoMap.get(stringBuilder1);
-            Map<String, TagInfo> map2 = this.tagInfoMap;
-            StringBuilder stringBuilder2 = new StringBuilder();
-            stringBuilder2.append(paramLogBaseEpcInfo.getTid());
-            stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
-            long l = ((TagInfo) Objects.requireNonNull(map2.get(stringBuilder2.toString()))).getCount();
-            stringBuilder2 = new StringBuilder();
-            stringBuilder2.append(paramLogBaseEpcInfo.getRssi());
-            stringBuilder2.append("");
-            tagInfo.setRssi(stringBuilder2.toString());
-            tagInfo.setReservedData(paramLogBaseEpcInfo.getReserved());
-            tagInfo.setUserData(paramLogBaseEpcInfo.getUserdata());
-            tagInfo.setCount(l + 1L);
-            map2 = this.tagInfoMap;
-            stringBuilder2 = new StringBuilder();
-            stringBuilder2.append(paramLogBaseEpcInfo.getTid());
-            stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
-            map2.put(stringBuilder2.toString(), tagInfo);
-        } else {
-            TagInfo tagInfo = new TagInfo();
-            tagInfo.setIndex(this.index);
-            tagInfo.setType("6C");
-            tagInfo.setEpc(paramLogBaseEpcInfo.getEpc());
-            tagInfo.setCount(1L);
-            tagInfo.setUserData(paramLogBaseEpcInfo.getUserdata());
-            tagInfo.setReservedData(paramLogBaseEpcInfo.getReserved());
-            tagInfo.setTid(paramLogBaseEpcInfo.getTid());
-            stringBuilder = new StringBuilder();
-            stringBuilder.append(paramLogBaseEpcInfo.getRssi());
-            stringBuilder.append("");
-            tagInfo.setRssi(stringBuilder.toString());
-            tagInfo.setReadTime(new Date());
-            String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
-                    paramLogBaseEpcInfo.getEpc();
-            this.tagInfoMap.put(stringBuilder1, tagInfo);
-            this.index = this.index + 1L;
-        }
+    public Map<String, TagInfo> pooled6cData(LogBaseEpcInfo info) {
 
+        if (tagInfoMap.containsKey(info.getTid() + info.getEpc())) {
+            TagInfo tagInfo = tagInfoMap.get(info.getTid() + info.getEpc());
+            Long count = tagInfoMap.get(info.getTid() + info.getEpc()).getCount();
+            count++;
+            tagInfo.setRssi(info.getRssi() + "");
+            tagInfo.setReservedData(info.getReserved());
+            tagInfo.setUserData(info.getUserdata());
+            tagInfo.setCount(count);
+            tagInfoMap.put(info.getTid() + info.getEpc(), tagInfo);
+        } else {
+            TagInfo tag = new TagInfo();
+            tag.setIndex(index);
+            tag.setType("6C");
+            tag.setEpc(info.getEpc());
+            tag.setCount(1l);
+            tag.setUserData(info.getUserdata());
+            tag.setReservedData(info.getReserved());
+            tag.setTid(info.getTid());
+            tag.setRssi(info.getRssi() + "");
+            tag.setReadTime(new Date());
+            tagInfoMap.put(info.getTid() + info.getEpc(), tag);
+            index++;
+        }
         return this.tagInfoMap;
     }
 

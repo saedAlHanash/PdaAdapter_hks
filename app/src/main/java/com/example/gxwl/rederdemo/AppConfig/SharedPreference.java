@@ -28,6 +28,8 @@ public class SharedPreference {
     private static final String DEACTIVATE = "dac";
     private static final String IP = "ip";
     private static final String PORT = "port";
+    private static final String COUNT = "c";
+    private static final String DELAY = "d";
 
 
     public static SharedPreferences sp;
@@ -236,6 +238,22 @@ public class SharedPreference {
 
     public static String getLanguage() {
         return sp.getString("lang", "en");
+    }
+
+    public static void saveCount(int count) {
+        spEdit.putInt(COUNT, count).commit();
+    }
+
+    public static void saveDelay(int delay) {
+        spEdit.putInt(DELAY, delay).commit();
+    }
+
+    public static int getCount() {
+        return sp.getInt(COUNT, 10);
+    }
+
+    public static int getDelay() {
+        return sp.getInt(DELAY, 10);
     }
 
 }

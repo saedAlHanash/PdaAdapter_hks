@@ -1,5 +1,10 @@
 package com.example.gxwl.rederdemo.SAED.Network;
 
+import android.app.Activity;
+
+import com.example.gxwl.rederdemo.adapter.RecycleViewAdapter;
+import com.example.gxwl.rederdemo.entity.TagInfo;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -8,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
 
 public class SocketClient {
 
@@ -19,6 +25,8 @@ public class SocketClient {
      * call back fro listen connect change stat
      */
     ConnectStat connectStat;
+
+    private SendThread sendThread;
 
     String ip;
     int port;
@@ -77,6 +85,11 @@ public class SocketClient {
             //تهيئة متنصت قراءة من ال socket بحيث عند انقطاع الاتصال يقوم ب exception من خلاله نقوم بتغير حالة التصال بال callBack
             //تم اللجوء لهذا الحل لان ال socket.isConnected() تقوم بإرجاع true دوما
             new Thread(runnable).start();
+
+            if (sendThread == null) {
+                sendThread = new SendThread();
+                sendThread.start();
+            }
 
             return socket.isConnected();
 
@@ -167,6 +180,19 @@ public class SocketClient {
         mBufferOut.flush();
     }
 
+    Activity activity;
+
+    RecycleViewAdapter adapter;
+
+    public void sendDataList(List<TagInfo> list, Activity activity, RecycleViewAdapter adapter) {
+        this.activity = activity;
+        this.adapter = adapter;
+        if (sendThread == null)
+            return;
+
+        sendThread.SendData(list);
+    }
+
     /**
      * start listener reed in socket <br>
      * الاستفادة : عند فقدان الاتصال يقوم برد أكسبشن لذلك نستفيد منه فقط لمعرفة حالة الاتصال
@@ -194,14 +220,15 @@ public class SocketClient {
      */
     public void close() {
 
-
-        new Thread(() ->
-        {
+        new Thread(() -> {
             try {
-//                mBufferOut.println("close connect" + socket.getLocalAddress().getHostName() + socket.getPort());
                 socket.close();
                 mBufferOut.close();
                 finalIn.close();
+
+                if (sendThread != null)
+                    sendThread.killSelf();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -209,6 +236,86 @@ public class SocketClient {
         ).start();
 
 
+    }
+
+    private final Object lock = new Object();
+
+    /**
+     * checking if socket is closed connecting
+     */
+    public boolean isClosed() {
+        if (socket == null)
+            return false;
+
+        return socket.isClosed();
+    }
+
+    public class SendThread extends Thread {
+
+        private boolean threadKill = true;
+
+        List<TagInfo> mTagList;
+
+        @Override
+        public void run() {
+            synchronized (lock) {
+                while (threadKill) {
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (!threadKill)
+                        break;
+
+                    for (int i = 0; i < mTagList.size(); i++) {
+
+                        //العنصر تم ارساله
+                        if (mTagList.get(i).isSanded)
+                            continue;
+
+                        sleep();
+
+                        //يوجد اتصال
+                        if (isConnected()) {
+                            //ارسال العنصر
+                            sendString(mTagList.get(i).getEpc());
+                            mTagList.get(i).isSanded = true;
+
+                        } else
+                            reConnect();//اعادة الاتصال
+                    }
+
+                    if (activity != null)
+                        activity.runOnUiThread(() -> {
+                            adapter.notifyDataSetChanged();
+                        });
+                }
+            }
+        }
+
+        private void sleep() {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        public void SendData(List<TagInfo> list) {
+            this.mTagList = list;
+            synchronized (lock) {
+                lock.notify();
+            }
+        }
+
+        public void killSelf() {
+
+            this.threadKill = false;
+            synchronized (lock) {
+                lock.notify();
+            }
+        }
     }
 
     public interface ConnectStat {

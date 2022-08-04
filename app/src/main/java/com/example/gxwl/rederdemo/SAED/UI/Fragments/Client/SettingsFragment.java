@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.ToastUtils;
@@ -41,7 +42,10 @@ public class SettingsFragment extends Fragment {
     Spinner spinner;
     @BindView(R.id.ant_query)
     Button query;
-
+    @BindView(R.id.editTextNumber2)
+    EditText count;
+    @BindView(R.id.editTextNumber)
+    EditText delay;
     View view;
 
     private final Hashtable<Integer, Integer> mAntMap = new Hashtable<>();
@@ -126,16 +130,30 @@ public class SettingsFragment extends Fragment {
         int mPort = getPort();
         String mIp = getIp();
 
+        int count = SharedPreference.getCount();
+        int delay = SharedPreference.getDelay();
+
         if (!mIp.isEmpty())
             this.ip.setText(mIp);
 
         if (mPort != 0)
             this.port.setText(String.valueOf(mPort));
+
+        if (count > 10)
+            this.count.setText(String.valueOf(count));
+
+        if (delay > 10)
+            this.delay.setText(String.valueOf(delay));
+
+
     }
 
     void saveInFile() {
         String mIp = ip.getText().toString();
         int mPort = Integer.parseInt(port.getText().toString());
+        int c = Integer.parseInt(count.getText().toString());
+        int d = Integer.parseInt(delay.getText().toString());
+
 
         if (mIp.isEmpty()) {
             ip.setError("required");
@@ -148,6 +166,9 @@ public class SettingsFragment extends Fragment {
 
         saveIp(mIp);
         savePort(mPort);
+
+        SharedPreference.saveCount(c);
+        SharedPreference.saveDelay(d);
 
         Toast.makeText(requireActivity(), getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
 

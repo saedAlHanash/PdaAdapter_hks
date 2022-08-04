@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.ReadOrWriteActivity;
 import com.example.gxwl.rederdemo.entity.TagInfo;
@@ -26,6 +27,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public int lastIndexSent;
     public Thread thread;
     boolean newDataWhenThreadSendData = false;
+
+    Object lock;
 
     Activity activity;
 
@@ -43,57 +46,10 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         initSendDataThread();
     }
 
-    /**
-     * start thread to send data to socket <br>
-     * its making for in all items id {@link #mTagList} and checking each item if sent or not<br>
-     * after for finishing thread sleeping<br>
-     * then when an new items adding to adapter thread interrupt and do new for in items and resend
-     * all items not sent<br>
-     */
     void initSendDataThread() {
-        thread = new Thread(() -> {
-            while (threadKill) {
-
-                for (int i = lastIndexSent; i < mTagList.size(); i++) {
-
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException ignored) {
-                    }
-                    if (((ReadOrWriteActivity) activity).socketClient.isConnected()) {//يوجد اتصال
-
-                        lastIndexSent += 1;
-
-                        if (mTagList.get(i).isSanded)//العنصر تم ارساله
-                            continue;
-
-                        //ارسال العنصر
-                        ((ReadOrWriteActivity) activity).socketClient.sendString(mTagList.get(i).getEpc());
-                        mTagList.get(i).isSanded = true;
-
-                    } else {
-                        //اذا كان ال thread الأول الذي يحاول الاتصال ما زال يحاول
-                        //(موجود في ال activity في تابع ال initSocket)
-                        if (!((ReadOrWriteActivity) activity).tryConnect)
-                            ((ReadOrWriteActivity) activity).socketClient.reConnect();//اعادة الاتصال
-                    }
-                }
-                //تأكد انه لم تصل بياات ريثما يتم العمل على الإرسال
-                //اذا وصل عاود عملية الارسال من جديد
-                if (!newDataWhenThreadSendData) {
-
-                    newDataWhenThreadSendData = false;
-                    try {
-                        thread.sleep(99999999); //sleep long time 💤💤
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else  // وإلا قم يتعليم العناصر ب ✔
-                    activity.runOnUiThread(this::notifyDataSetChanged); //✅ تعليم بأنه مرسل
-            }
-        });
-        thread.start();
+        ((ReadOrWriteActivity) activity).socketClient.sendDataList(this.mTagList,activity,this);
     }
+
 
     @Override
     public int getItemCount() {

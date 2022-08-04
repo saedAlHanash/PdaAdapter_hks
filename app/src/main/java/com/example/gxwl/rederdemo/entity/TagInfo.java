@@ -16,6 +16,11 @@ public class TagInfo implements Serializable {
     //    saed:
     public boolean isSanded = false;// to checking if sanded to server socket
 
+    public TagInfo(Long index, String epc) {
+        this.index = index;
+        this.epc = epc;
+    }
+
     public TagInfo() {
     }
 

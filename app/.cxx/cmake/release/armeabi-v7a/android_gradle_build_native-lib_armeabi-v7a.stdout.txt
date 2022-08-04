@@ -1,2 +1,0 @@
-ninja: Entering directory `C:\Users\24309\Desktop\PDA\PdaAdapter_hks\app\.cxx\cmake\release\armeabi-v7a'
-ninja: no work to do.
