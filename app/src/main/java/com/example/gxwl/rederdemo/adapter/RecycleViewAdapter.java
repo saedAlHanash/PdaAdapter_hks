@@ -23,13 +23,6 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     private List<TagInfo> mTagList;
     private Integer thisPosition = null;
-    public boolean threadKill = true;
-    public int lastIndexSent;
-    public Thread thread;
-    boolean newDataWhenThreadSendData = false;
-
-    Object lock;
-
     Activity activity;
 
     public Integer getThisPosition() {
@@ -43,11 +36,10 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public RecycleViewAdapter(List<TagInfo> list, Activity activity) {
         mTagList = list;
         this.activity = activity;
-        initSendDataThread();
     }
 
-    void initSendDataThread() {
-        ((ReadOrWriteActivity) activity).socketClient.sendDataList(this.mTagList,activity,this);
+    void sendData() {
+        ((ReadOrWriteActivity) activity).socketClient.sendDataList(this.mTagList, activity, this);
     }
 
 
@@ -61,11 +53,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_item, parent, false);
         final RecycleViewAdapter.ViewHolder holder = new RecycleViewAdapter.ViewHolder(view);
+
         view.setOnClickListener(v -> {
-
-            if (!mTagList.get(holder.getAdapterPosition()).isSanded)
-                thread.interrupt();
-
             TagInfo tag = mTagList.get(holder.getAdapterPosition());
             setThisPosition(holder.getAdapterPosition());
             notifyDataSetChanged();
@@ -114,41 +103,36 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView index;
-        TextView type;
+//        TextView type;
         TextView epc;
-        TextView tid;
-        TextView rssi;
-        TextView count;
-        TextView userData;
-        TextView reserveData;
+//        TextView tid;
+//        TextView rssi;
+//        TextView count;
+//        TextView userData;
+//        TextView reserveData;
         ImageView imageView;
 
         public ViewHolder(final View view) {
             super(view);
             index = (TextView) view.findViewById(R.id.index);
-            type = (TextView) view.findViewById(R.id.type);
             epc = (TextView) view.findViewById(R.id.epc);
-            tid = (TextView) view.findViewById(R.id.tid);
-            rssi = (TextView) view.findViewById(R.id.rssi);
-            count = (TextView) view.findViewById(R.id.count);
-            userData = (TextView) view.findViewById(R.id.userData);
-            reserveData = (TextView) view.findViewById(R.id.reserveData);
+//            type = (TextView) view.findViewById(R.id.type);
+//            tid = (TextView) view.findViewById(R.id.tid);
+//            rssi = (TextView) view.findViewById(R.id.rssi);
+//            count = (TextView) view.findViewById(R.id.count);
+//            userData = (TextView) view.findViewById(R.id.userData);
+//            reserveData = (TextView) view.findViewById(R.id.reserveData);
             imageView = view.findViewById(R.id.imageView6);
         }
     }
 
     public void notifyData(List<TagInfo> poiItemList) {
-
         if (poiItemList != null) {
             mTagList = poiItemList;
+            sendData();
+
             notifyDataSetChanged();
         }
-
-        if (!thread.isInterrupted()) // اذا كان ال thread منتهي من عمله وتم ارسال الكل
-            thread.interrupt();// شغله ليقوم بارسال الداتا الجديدة
-        else// وإلا
-            //ال thread لازال يعمل لذا قم بترك رسالة له ليعاود العمل عندما ينتهي
-            newDataWhenThreadSendData = true;
     }
 
 

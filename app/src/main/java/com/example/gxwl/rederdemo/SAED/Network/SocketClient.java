@@ -16,17 +16,18 @@ import java.net.Socket;
 import java.util.List;
 
 public class SocketClient {
-
-    Socket socket;
-    InetAddress inetAddress;
-
-    PrintWriter mBufferOut;
     /**
      * call back fro listen connect change stat
      */
     ConnectStat connectStat;
 
-    private SendThread sendThread;
+    Socket socket;
+    InetAddress inetAddress;
+    DataInputStream finalIn = null;
+    PrintWriter mBufferOut;
+
+    SendThread sendThread;
+    ConnectThread connectThread = new ConnectThread();
 
     String ip;
     int port;
@@ -37,14 +38,12 @@ public class SocketClient {
      * just lat current thread try
      */
     boolean reconnect = false;
-
     /**
      * set true when socket connect
      * set false when socket lost connect
      */
     boolean isConnect = false;
 
-    DataInputStream finalIn = null;
 
     /**
      * set listener for connect change in this Socket<br>
@@ -62,16 +61,8 @@ public class SocketClient {
 //        mBufferOut.println("connected with" + socket.getLocalAddress().getHostName() + socket.getPort()); // ارسال من اتصل للسيرفر
     }
 
-    /**
-     * start connect with server Socket
-     *
-     * @param ip   socket ip address
-     * @param port socket port
-     * @return true if connecting
-     */
-    public boolean connect(String ip, int port) {
-        this.ip = ip;
-        this.port = port;
+
+    private boolean connect() {
         try {
             inetAddress = InetAddress.getByName(ip);
             socket = new Socket(inetAddress, port);// الاتصال بال socket
@@ -99,12 +90,26 @@ public class SocketClient {
     }
 
     /**
+     * start connect with server Socket
+     *
+     * @param mIp   socket ip address
+     * @param mPort socket port
+     * @return true if connecting
+     */
+    public void connect(String mIp, int mPort) {
+        this.ip = mIp;
+        this.port = mPort;
+
+        connectThread.start();
+    }
+
+    /**
      * checking if socket is connecting
      */
     public boolean isConnected() {
-        if (socket == null) {
+        if (socket == null)
             return false;
-        }
+
         return socket.isConnected() && isConnect;
     }
 
@@ -112,25 +117,8 @@ public class SocketClient {
      * reconnect with server socket
      */
     public void reConnect() {
-        if (reconnect)
-            return;
 
-        reconnect = true;
-
-        new Thread(() -> {
-            while (reconnect) {
-                //اذا الاتصال تم
-                if (connect(ip, port)) {
-                    reconnect = false;
-                    break;
-                } else // اذا لم يتصل
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-            }
-        }).start();
+        connectThread.reConnect();
     }
 
     public void sendBoolean(boolean b) {
@@ -203,6 +191,7 @@ public class SocketClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         while (true) {
             try {
                 finalIn.readBoolean();
@@ -219,23 +208,28 @@ public class SocketClient {
      * close connect with server socket
      */
     public void close() {
-
         new Thread(() -> {
             try {
-                socket.close();
-                mBufferOut.close();
-                finalIn.close();
+
+                if (socket != null)
+                    socket.close();
+
+                if (mBufferOut != null)
+                    mBufferOut.close();
+
+                if (finalIn != null)
+                    finalIn.close();
 
                 if (sendThread != null)
                     sendThread.killSelf();
 
+                if (connectThread != null)
+                    connectThread.killSelf();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        ).start();
-
-
+        }).start();
     }
 
     private final Object lock = new Object();
@@ -315,6 +309,47 @@ public class SocketClient {
             synchronized (lock) {
                 lock.notify();
             }
+        }
+    }
+
+    public class ConnectThread extends Thread {
+
+        boolean tryConnect = true;
+
+        @Override
+        public void run() {
+            while (tryConnect) {
+                if (connect()) {
+
+                    if (connectStat != null)
+                        connectStat.stat(true);
+                    tryConnect = false;
+                    break;
+
+                } else
+                    sleep();
+            }
+        }
+
+        private void sleep() {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void reConnect() {
+            if (!tryConnect) {
+                tryConnect = true;
+                this.run();
+            }
+        }
+
+
+        public void killSelf() {
+            this.tryConnect = false;
+            this.interrupt();
         }
     }
 

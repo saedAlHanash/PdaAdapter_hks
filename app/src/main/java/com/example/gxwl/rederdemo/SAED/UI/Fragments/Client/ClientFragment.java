@@ -91,17 +91,17 @@ public class ClientFragment extends Fragment {
     public void initConnected() {
 
         if (GlobalClient.getClient().
-                openCusAndroidSerial("/dev/ttysWK0:115200", 64, 0)) {
+                openCusAndroidSerial("/dev/ttysWK0:115200", 64, 100)) {
             this.isClient = true;
 
             GlobalClient.getClient().debugLog = new HandlerDebugLog() {
 
                 public void receiveDebugLog(String param1String) {
-                    Log.e("receive", param1String);
+                    Log.e("receive", "snary"+param1String);
                 }
 
                 public void sendDebugLog(String param1String) {
-                    Log.e("send", param1String);
+                    Log.e("send","snary"+ param1String);
                 }
             };
         } else {

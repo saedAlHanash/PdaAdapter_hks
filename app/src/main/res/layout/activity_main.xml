@@ -135,7 +135,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/rounded_shape"
                 android:elevation="@dimen/_2sdp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <Spinner
                     android:id="@+id/spinner_tybe_scan"

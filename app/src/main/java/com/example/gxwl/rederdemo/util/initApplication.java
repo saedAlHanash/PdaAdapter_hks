@@ -14,8 +14,8 @@ public class initApplication extends Application {
     public void onCreate() {
         super.onCreate();
         LocalManageUtil.setApplicationLanguage(this);
-        ToastUtils.init(this);
         SharedPreferencesUtil.getInstance(this, "rfid");
+        ToastUtils.init(this);
         AppStateTracker.track(this, new AppStateTracker.AppStateChangeListener() {
             public void appTurnIntoBackGround() {
                 Log.e("appTurnIntoForeground", "下电");
@@ -31,18 +31,18 @@ public class initApplication extends Application {
         });
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        //保存系统选择语言
-        LocalManageUtil.saveSystemCurrentLanguage(base);
-        super.attachBaseContext(LocalManageUtil.setLocal(base));
-    }
+//    @Override
+//    protected void attachBaseContext(Context base) {
+//        //保存系统选择语言
+//        LocalManageUtil.saveSystemCurrentLanguage(base);
+//        super.attachBaseContext(LocalManageUtil.setLocal(base));
+//    }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        //保存系统选择语言
-        LocalManageUtil.onConfigurationChanged(getApplicationContext());
-    }
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        //保存系统选择语言
+//        LocalManageUtil.onConfigurationChanged(getApplicationContext());
+//    }
 
 }
