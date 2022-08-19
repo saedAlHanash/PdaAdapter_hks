@@ -2,12 +2,18 @@ package com.example.gxwl.rederdemo;
 
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,13 +24,19 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
-import com.example.gxwl.rederdemo.SAED.Network.SocketClient;
-import com.example.gxwl.rederdemo.adapter.RecycleViewAdapter;
+import com.example.gxwl.rederdemo.Helpers.Images.ConverterImage;
+import com.example.gxwl.rederdemo.SAED.Network.SaedSocket;
+
+import com.example.gxwl.rederdemo.SAED.Product;
+import com.example.gxwl.rederdemo.adapter.AdapterItemEpc;
+
 import com.example.gxwl.rederdemo.entity.TagInfo;
 import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.ToastUtils;
@@ -60,7 +72,13 @@ import com.gg.reader.api.protocol.gx.ParamEpcReadReserved;
 import com.gg.reader.api.protocol.gx.ParamEpcReadTid;
 import com.gg.reader.api.protocol.gx.ParamEpcReadUserdata;
 import com.gg.reader.api.utils.ThreadPoolUtils;
+import com.google.gson.Gson;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,71 +113,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     @BindView(R.id.scan_type_tv)
     TextView typeScanTv;
 
-    EditText w_epc;
-    EditText w_tid;
-    EditText w_pas;
-    EditText w_len;
-    EditText w_value;
-    //6c
-    EditText w_user_epc;
-    EditText w_user_tid;
-    EditText w_user_pas;
-    EditText w_user_len;
-    EditText w_user_value;
-    //6b
-    EditText w_6b_user_tid;
-    EditText w_6b_user_start;
-    EditText w_6b_user_value;
-    //自定义写
-    Spinner cus_mode;
-    EditText cus_start;
-    EditText cus_pas;
-    EditText cus_epc;
-    EditText cus_tid;
-    EditText cus_user;
-    //标签信息
-    TextView info_index;
-    TextView info_type;
-    TextView info_epc;
-    TextView info_tid;
-    TextView info_userData;
-    TextView info_Reserved;
-
-    //gb user write
-    EditText w_gb_user_epc;
-    EditText w_gb_user_pas;
-    EditText w_gb_user_tid;
-    EditText w_gb_user_start;
-    Spinner write_gb_user_child;
-    EditText w_gb_user_value;
-    //gb epc write
-    EditText w_gb_epc;
-    EditText w_gb_pas;
-    EditText w_gb_tid;
-    EditText w_gb_len;
-    EditText w_gb_value;
-
-    //自定义读
-    Spinner cus_read_mode;
-    EditText cus_read_start;
-    EditText cus_read_epc;
-    EditText cus_read_tid;
-    EditText cus_read_user;
-    Spinner cus_read_tid_mode;
-    EditText cus_read_tid_len;
-    CheckBox read_tid_true;
-    EditText cus_read_match_content;
-
-    EditText cus_read_user_start;
-    EditText cus_read_user_len;
-    CheckBox read_user_true;
-
-    EditText cus_read_reserve_start;
-    EditText cus_read_reserve_len;
-    CheckBox read_reserve_true;
-
-    CheckBox read_other_pas;
-    EditText cus_read_pas;
 
     // endregion
 
@@ -168,7 +121,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     private final Map<String, TagInfo> tagInfoMap = new LinkedHashMap<String, TagInfo>();//去重数据源
     private final List<TagInfo> tagInfoList = new ArrayList<TagInfo>();//适配器所需数据源
     private Long index = 1L;//索引
-    private RecycleViewAdapter adapter;
+    //    private RecycleViewAdapter adapter;
     private ParamEpcReadTid tidParam = null;
     private ParamEpcReadUserdata userParam = null;
     private ParamEpcReadReserved reserveParam = null;
@@ -182,8 +135,8 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
+    ImageView imageView;
     //saed :
-    public SocketClient socketClient = new SocketClient();
     /**
      * to checking if can reConnect with socket <p>
      * will be false when onDestroy Activity
@@ -197,6 +150,11 @@ public class ReadOrWriteActivity extends AppCompatActivity {
      * socket port
      */
     public int port;
+    URI uri;
+
+    AdapterItemEpc adapterItemEpc;
+
+    ArrayList<Product> list = new ArrayList<>();
 
     int typeScan;
     private static final int SINGLE = 0;
@@ -211,50 +169,40 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         isClient = getIntent().getBooleanExtra("isClient", false);
 
         ip = SharedPreference.getIp().replaceAll("\\s+", "");
+
         port = SharedPreference.getPort();
 
         initSocket(ip, port);
 
-        listeners();
 
         if (isClient)
             subHandler(GlobalClient.getClient());
 
-        initRecycleView();
+//        initRecycleView();
+        initAdapter();
 
         UtilSound.initSoundPool(this);
     }
 
-    //saed :
-    void listeners() {
-//        typeScanTv.setOnClickListener(view -> {
-//            spinnerTypeScan.performClick();
-//        });
-
-//        spinnerTypeScan.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                typeScan = i;
-//
-//                if (i == 0)
-//                    typeScanTv.setText(getResources().getString(R.string.single));
-//                else
-//                    typeScanTv.setText(getResources().getString(R.string.loop));
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-    }
+    WebSocketClient webSocketClient;
+    SaedSocket socket;
+    Gson gson = new Gson();
+    int lastIndex = 0;
 
     private void computedSpeed() {
         Runnable runnable = new Runnable() {
             public void run() {
+
+                int siz = tagInfoList.size();
+
                 tagInfoList.clear();
                 tagInfoList.addAll(tagInfoMap.values());
-                adapter.notifyData(tagInfoList);
+
+                if (siz < tagInfoList.size())
+                    for (int i = lastIndex; i < tagInfoList.size(); i++) {
+                        socket.send(tagInfoList.get(i).getEpc());
+                        lastIndex += 1;
+                    }
 
                 mHandler.postDelayed(this, 1000L);///سعيد
 
@@ -272,86 +220,168 @@ public class ReadOrWriteActivity extends AppCompatActivity {
      * @param mPort socket port
      */
     public void initSocket(String mIp, int mPort) {
-        socketClient.connect(mIp, mPort);
-        //call back active when connect stat change
-        socketClient.setOnChangeConnectStatListener(connect -> {
-            // use UI case this call back from background thread
-            runOnUiThread(() -> {
-                if (connect)
+
+        try {
+            uri = new URI("ws://" + mIp + ":" + mPort);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        webSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake h) {
+                Log.d(TAG, "onOpen: ");
+                handler.sendEmptyMessage(201);
+            }
+
+            @Override
+            public void onMessage(String message) {
+                Log.d(TAG, "onMessage: siz" + message.length());
+
+                Log.d(TAG, "onMessage: " + message);
+
+                if (message.trim().equals("404")) {
+                    handler.sendEmptyMessage(404);
+                    return;
+                }
+
+                Product mm = gson.fromJson(message, Product.class);
+                mm.bitmap = ConverterImage.convertBase64ToBitmap(mm.im);
+
+                list.add(mm);
+                handler.sendEmptyMessage(200);
+
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+                Log.d(TAG, "onClose: ");
+                handler.sendEmptyMessage(202);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                Log.e(TAG, "onError: ", ex);
+                handler.sendEmptyMessage(500);
+            }
+        };
+
+        socket = new SaedSocket(webSocketClient);
+    }
+
+    private static final String TAG = "ReadOrWriteActivity_";
+
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull android.os.Message msg) {
+            switch (msg.what) {
+                case 404:
+                    Toast.makeText(ReadOrWriteActivity.this,
+                            "not found", Toast.LENGTH_SHORT).show();
+                    break;
+                case 500:
+                    Toast.makeText(ReadOrWriteActivity.this,
+                            "have error", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case 200:
+                    adapterItemEpc.notifyDataSetChanged();
+                    break;
+                case 201:
                     notConnectTv.setVisibility(View.GONE);
-                else
+                    break;
+
+                case 202:
                     notConnectTv.setVisibility(View.VISIBLE);
-            });
-        });
+                    break;
+            }
+
+        }
+    };
+
+    void initAdapter() {
+        if (adapterItemEpc == null)
+            adapterItemEpc = new AdapterItemEpc(this, list);
+        else
+            adapterItemEpc.setAndRefresh(list);
+
+        initRecycler();
     }
 
-    //初始化RecycleView
-    public void initRecycleView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    void initRecycler() {
         RecyclerView rv = (RecyclerView) findViewById(R.id.recycle);
-        rv.setLayoutManager(layoutManager);
-        rv.addItemDecoration(new DividerItemDecoration(this, 1));
-        adapter = new RecycleViewAdapter(tagInfoList, this);
-        rv.setAdapter(adapter);
-
+        rv.setLayoutManager(new GridLayoutManager(this, 2));
+        rv.setAdapter(adapterItemEpc);
     }
 
+
+//    //初始化RecycleView
+//    public void initRecycleView() {
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        adapter = new RecycleViewAdapter(tagInfoList, this);
+//    }
+
+    int dd = 0;
 
     //读卡
     @OnClick(R.id.read)
     public void readCard() {
-        if (isClient) {
-            if (!isReader) {
 
-                //   if (type.getCheckedRadioButtonId() == R.id.c) {
-                MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
-                msg.setAntennaEnable(EnumG.AntennaNo_1 | EnumG.AntennaNo_2);
+        socket.send("1," + String.valueOf(dd) + String.valueOf(dd) + String.valueOf(dd) + String.valueOf(dd));
+        dd++;
 
-//                if (typeScan == SINGLE)
-//                    msg.setInventoryMode(EnumG.InventoryMode_Single);
-//                 else
-
-                msg.setInventoryMode(EnumG.InventoryMode_Inventory);
-
-
-                if (isChecked[0]) {
-                    tidParam = new ParamEpcReadTid();
-                    tidParam.setMode(EnumG.ParamTidMode_Auto);
-                    tidParam.setLen(6);
-                    msg.setReadTid(tidParam);
-                }
-                if (isChecked[1]) {
-                    userParam = new ParamEpcReadUserdata();
-                    userParam.setStart(0);
-                    userParam.setLen(6);
-                    msg.setReadUserdata(userParam);
-                }
-                if (isChecked[2]) {
-                    reserveParam = new ParamEpcReadReserved();
-                    reserveParam.setStart(0);
-                    reserveParam.setLen(4);
-                    msg.setReadReserved(reserveParam);
-                }
-
-                client.sendSynMsg(msg);
-
-                if (0x00 == msg.getRtCode()) {
-                    ToastUtils.showText("Start ReadCard");
-                    isReader = true;
-                    computedSpeed();
-                    soundTask();
-
-                } else {
-                    handlerStop.sendEmptyMessage(1);
-                    ToastUtils.showText(msg.getRtMsg());
-                }
-            } else {
-                ToastUtils.showText(getResources().getString(R.string.read_card_being));
-            }
-        } else {
-            ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
+//        if (isClient) {
+//            if (!isReader) {
+//
+//                //   if (type.getCheckedRadioButtonId() == R.id.c) {
+//                MsgBaseInventoryEpc msg = new MsgBaseInventoryEpc();
+//                msg.setAntennaEnable(EnumG.AntennaNo_1 | EnumG.AntennaNo_2);
+//
+////                if (typeScan == SINGLE)
+////                    msg.setInventoryMode(EnumG.InventoryMode_Single);
+////                 else
+//
+//                msg.setInventoryMode(EnumG.InventoryMode_Inventory);
+//
+//
+//                if (isChecked[0]) {
+//                    tidParam = new ParamEpcReadTid();
+//                    tidParam.setMode(EnumG.ParamTidMode_Auto);
+//                    tidParam.setLen(6);
+//                    msg.setReadTid(tidParam);
+//                }
+//                if (isChecked[1]) {
+//                    userParam = new ParamEpcReadUserdata();
+//                    userParam.setStart(0);
+//                    userParam.setLen(6);
+//                    msg.setReadUserdata(userParam);
+//                }
+//                if (isChecked[2]) {
+//                    reserveParam = new ParamEpcReadReserved();
+//                    reserveParam.setStart(0);
+//                    reserveParam.setLen(4);
+//                    msg.setReadReserved(reserveParam);
+//                }
+//
+//                client.sendSynMsg(msg);
+//
+//                if (0x00 == msg.getRtCode()) {
+//                    ToastUtils.showText("Start ReadCard");
+//                    isReader = true;
+//                    computedSpeed();
+//                    soundTask();
+//
+//                } else {
+//                    handlerStop.sendEmptyMessage(1);
+//                    ToastUtils.showText(msg.getRtMsg());
+//                }
+//            } else {
+//                ToastUtils.showText(getResources().getString(R.string.read_card_being));
+//            }
+//        } else {
+//            ToastUtils.showText(getResources().getString(R.string.ununited));
+//        }
     }
 
     private Runnable timeTask = null;
@@ -392,7 +422,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     public void cleanData() {
         if (isClient) {
             tagInfoList.clear();
-            adapter.notifyData(tagInfoList);
+//            adapter.notifyData(tagInfoList);
 //            initPane();
         } else {
             ToastUtils.showText(getResources().getString(R.string.ununited));
@@ -546,7 +576,9 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(paramLogBaseEpcInfo.getTid());
         stringBuilder.append(paramLogBaseEpcInfo.getEpc());
+
         if (this.tagInfoMap.containsKey(stringBuilder.toString())) {
+
             String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
                     paramLogBaseEpcInfo.getEpc();
             TagInfo tagInfo = this.tagInfoMap.get(stringBuilder1);
@@ -567,6 +599,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             stringBuilder2.append(paramLogBaseEpcInfo.getTid());
             stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
             map2.put(stringBuilder2.toString(), tagInfo);
+
         } else {
             TagInfo tagInfo = new TagInfo();
             tagInfo.setIndex(this.index);
@@ -711,7 +744,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         this.tryConnect = false;
 
         rateValue = 0L;
-        socketClient.close();
+        socket.close();
     }
 
     @Override
@@ -725,7 +758,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
                     mHandler.removeCallbacks(r);
                     soundHandler.removeCallbacks(timeTask);
-                    upDataPane();
+//                    upDataPane();
                     isReader = false;
                     ToastUtils.showText(getResources().getString(R.string.stop_card));
                 } else {
@@ -736,9 +769,9 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     }
 
 
-    private void upDataPane() {
-        adapter.notifyData(tagInfoList);
-    }
+//    private void upDataPane() {
+//        adapter.notifyData(tagInfoList);
+//    }
 
     @SuppressLint("HandlerLeak")
     final Handler handlerStop = new Handler() {
@@ -746,7 +779,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             if (param1Message.what == 1) {
                 mHandler.removeCallbacks(r);
                 soundHandler.removeCallbacks(timeTask);
-                upDataPane();
+//                upDataPane();
             }
             super.handleMessage(param1Message);
         }

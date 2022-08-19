@@ -38,9 +38,6 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         this.activity = activity;
     }
 
-    void sendData() {
-        ((ReadOrWriteActivity) activity).socketClient.sendDataList(this.mTagList, activity, this);
-    }
 
 
     @Override
@@ -129,7 +126,6 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public void notifyData(List<TagInfo> poiItemList) {
         if (poiItemList != null) {
             mTagList = poiItemList;
-            sendData();
 
             notifyDataSetChanged();
         }

@@ -25,8 +25,8 @@ public class initApplication extends Application {
 
             public void appTurnIntoForeground() {
                 Log.e("appTurnIntoForeground", "上电");
-                HksPower.uhf_power(1);
-                HksPower.uhf_1io(1);
+//                HksPower.uhf_power(1);
+//                HksPower.uhf_1io(1);
             }
         });
     }
