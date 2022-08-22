@@ -1,5 +1,5 @@
 {
-  "ndkFolder": "C:\\Users\\24309\\AppData\\Local\\Android\\Sdk\\ndk-bundle",
+  "ndkFolder": "C:\\Users\\saed\\AppData\\Local\\Android\\Sdk\\ndk\\20.0.5594570",
   "messages": [
     {
       "level": "INFO",
@@ -7,7 +7,7 @@
     },
     {
       "level": "INFO",
-      "message": "ndk.dir in local.properties is C:\\Users\\24309\\AppData\\Local\\Android\\Sdk\\ndk-bundle"
+      "message": "ndk.dir in local.properties is not set"
     },
     {
       "level": "INFO",
@@ -15,23 +15,27 @@
     },
     {
       "level": "INFO",
-      "message": "sdkFolder is C:\\Users\\24309\\AppData\\Local\\Android\\Sdk"
+      "message": "sdkFolder is C:\\Users\\saed\\AppData\\Local\\Android\\Sdk"
     },
     {
       "level": "INFO",
-      "message": "NDK side-by-side folder from sdkFolder C:\\Users\\24309\\AppData\\Local\\Android\\Sdk\\ndk does not exist"
+      "message": "Because no explicit NDK was requested, the default version \u002720.0.5594570\u0027 for this Android Gradle Plugin will be used"
     },
     {
       "level": "INFO",
-      "message": "Considering C:\\Users\\24309\\AppData\\Local\\Android\\Sdk\\ndk-bundle by ndk.dir"
+      "message": "Considering C:\\Users\\saed\\AppData\\Local\\Android\\Sdk\\ndk-bundle in SDK ndk-bundle folder"
     },
     {
       "level": "INFO",
-      "message": "Considering C:\\Users\\24309\\AppData\\Local\\Android\\Sdk\\ndk-bundle in SDK ndk-bundle folder"
+      "message": "Considering C:\\Users\\saed\\AppData\\Local\\Android\\Sdk\\ndk\\20.0.5594570 in SDK ndk folder"
     },
     {
       "level": "INFO",
-      "message": "Found requested ndk.dir (C:\\Users\\24309\\AppData\\Local\\Android\\Sdk\\ndk-bundle) which has version 19.1.5304403"
+      "message": "Considering C:\\Users\\saed\\AppData\\Local\\Android\\Sdk\\ndk\\25.0.8775105 in SDK ndk folder"
+    },
+    {
+      "level": "INFO",
+      "message": "Found requested NDK version 20.0.5594570 at C:\\Users\\saed\\AppData\\Local\\Android\\Sdk\\ndk\\20.0.5594570"
     }
   ]
 }

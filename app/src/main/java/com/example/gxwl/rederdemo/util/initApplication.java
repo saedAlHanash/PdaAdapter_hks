@@ -15,7 +15,7 @@ public class initApplication extends Application {
         super.onCreate();
         LocalManageUtil.setApplicationLanguage(this);
         SharedPreferencesUtil.getInstance(this, "rfid");
-
+        ToastUtils.init(this);
         AppStateTracker.track(this, new AppStateTracker.AppStateChangeListener() {
             public void appTurnIntoBackGround() {
                 Log.e("appTurnIntoForeground", "下电");

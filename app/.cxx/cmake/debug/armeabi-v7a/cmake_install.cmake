@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/24309/Desktop/PDA/PdaAdapter_hks/app
+# Install script for directory: C:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/24309/Desktop/PDA/PdaAdapter_hks/app/.cxx/cmake/debug/armeabi-v7a/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/.cxx/cmake/debug/armeabi-v7a/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

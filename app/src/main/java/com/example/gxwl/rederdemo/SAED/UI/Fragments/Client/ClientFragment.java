@@ -71,8 +71,13 @@ public class ClientFragment extends Fragment {
 
     // المسح الذكي
     private final View.OnClickListener smartScanListener = v -> {
-
+        startSmartScanFragment();
     };
+
+     void startSmartScanFragment() {
+        FTH.addFragmentUpFragment(FC.CLIENT_C, requireActivity(), new SmartScanFragment(), FN.SMART_SCAN_FN);
+    }
+
     // جرد المخزن
     private final View.OnClickListener inventoryListener = v -> {
         startInventory();
@@ -91,17 +96,17 @@ public class ClientFragment extends Fragment {
     public void initConnected() {
 
         if (GlobalClient.getClient().
-                openCusAndroidSerial("/dev/ttysWK0:115200", 64, 0)) {
+                openCusAndroidSerial("/dev/ttysWK0:115200", 64, 100)) {
             this.isClient = true;
 
             GlobalClient.getClient().debugLog = new HandlerDebugLog() {
 
                 public void receiveDebugLog(String param1String) {
-                    Log.e("receive", param1String);
+                    Log.e("receive", "snary" + param1String);
                 }
 
                 public void sendDebugLog(String param1String) {
-                    Log.e("send", param1String);
+                    Log.e("send", "snary" + param1String);
                 }
             };
         } else {
@@ -124,16 +129,16 @@ public class ClientFragment extends Fragment {
 
 //        if (isClient) {
 
-            Locale locale = new Locale(SharedPreference.getLanguage());
-            Locale.setDefault(locale);
-            Configuration config = new Configuration();
-            config.locale = locale;
-            getResources().updateConfiguration(config,
-                    getResources().getDisplayMetrics());
+        Locale locale = new Locale(SharedPreference.getLanguage());
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration(config,
+                getResources().getDisplayMetrics());
 
-            Intent intent = new Intent(requireActivity(), ReadOrWriteActivity.class);
-            intent.putExtra("isClient", isClient);
-            startActivity(intent);
+        Intent intent = new Intent(requireActivity(), ReadOrWriteActivity.class);
+        intent.putExtra("isClient", isClient);
+        startActivity(intent);
 
 //        } else {
 //            ToastUtils.showText(getResources().getString(R.string.ununited));

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.ReadOrWriteActivity;
 import com.example.gxwl.rederdemo.entity.TagInfo;
@@ -22,11 +23,6 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     private List<TagInfo> mTagList;
     private Integer thisPosition = null;
-    public boolean threadKill = true;
-    public int lastIndexSent;
-    public Thread thread;
-    boolean newDataWhenThreadSendData = false;
-
     Activity activity;
 
     public Integer getThisPosition() {
@@ -40,60 +36,9 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public RecycleViewAdapter(List<TagInfo> list, Activity activity) {
         mTagList = list;
         this.activity = activity;
-        initSendDataThread();
     }
 
-    /**
-     * start thread to send data to socket <br>
-     * its making for in all items id {@link #mTagList} and checking each item if sent or not<br>
-     * after for finishing thread sleeping<br>
-     * then when an new items adding to adapter thread interrupt and do new for in items and resend
-     * all items not sent<br>
-     */
-    void initSendDataThread() {
-        thread = new Thread(() -> {
-            while (threadKill) {
 
-                for (int i = lastIndexSent; i < mTagList.size(); i++) {
-
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException ignored) {
-                    }
-                    if (((ReadOrWriteActivity) activity).socketClient.isConnected()) {//يوجد اتصال
-
-                        lastIndexSent += 1;
-
-                        if (mTagList.get(i).isSanded)//العنصر تم ارساله
-                            continue;
-
-                        //ارسال العنصر
-                        ((ReadOrWriteActivity) activity).socketClient.sendString(mTagList.get(i).getEpc());
-                        mTagList.get(i).isSanded = true;
-
-                    } else {
-                        //اذا كان ال thread الأول الذي يحاول الاتصال ما زال يحاول
-                        //(موجود في ال activity في تابع ال initSocket)
-                        if (!((ReadOrWriteActivity) activity).tryConnect)
-                            ((ReadOrWriteActivity) activity).socketClient.reConnect();//اعادة الاتصال
-                    }
-                }
-                //تأكد انه لم تصل بياات ريثما يتم العمل على الإرسال
-                //اذا وصل عاود عملية الارسال من جديد
-                if (!newDataWhenThreadSendData) {
-
-                    newDataWhenThreadSendData = false;
-                    try {
-                        thread.sleep(99999999); //sleep long time 💤💤
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else  // وإلا قم يتعليم العناصر ب ✔
-                    activity.runOnUiThread(this::notifyDataSetChanged); //✅ تعليم بأنه مرسل
-            }
-        });
-        thread.start();
-    }
 
     @Override
     public int getItemCount() {
@@ -105,11 +50,8 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_item, parent, false);
         final RecycleViewAdapter.ViewHolder holder = new RecycleViewAdapter.ViewHolder(view);
+
         view.setOnClickListener(v -> {
-
-            if (!mTagList.get(holder.getAdapterPosition()).isSanded)
-                thread.interrupt();
-
             TagInfo tag = mTagList.get(holder.getAdapterPosition());
             setThisPosition(holder.getAdapterPosition());
             notifyDataSetChanged();
@@ -158,41 +100,35 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView index;
-        TextView type;
+//        TextView type;
         TextView epc;
-        TextView tid;
-        TextView rssi;
-        TextView count;
-        TextView userData;
-        TextView reserveData;
+//        TextView tid;
+//        TextView rssi;
+//        TextView count;
+//        TextView userData;
+//        TextView reserveData;
         ImageView imageView;
 
         public ViewHolder(final View view) {
             super(view);
             index = (TextView) view.findViewById(R.id.index);
-            type = (TextView) view.findViewById(R.id.type);
             epc = (TextView) view.findViewById(R.id.epc);
-            tid = (TextView) view.findViewById(R.id.tid);
-            rssi = (TextView) view.findViewById(R.id.rssi);
-            count = (TextView) view.findViewById(R.id.count);
-            userData = (TextView) view.findViewById(R.id.userData);
-            reserveData = (TextView) view.findViewById(R.id.reserveData);
+//            type = (TextView) view.findViewById(R.id.type);
+//            tid = (TextView) view.findViewById(R.id.tid);
+//            rssi = (TextView) view.findViewById(R.id.rssi);
+//            count = (TextView) view.findViewById(R.id.count);
+//            userData = (TextView) view.findViewById(R.id.userData);
+//            reserveData = (TextView) view.findViewById(R.id.reserveData);
             imageView = view.findViewById(R.id.imageView6);
         }
     }
 
     public void notifyData(List<TagInfo> poiItemList) {
-
         if (poiItemList != null) {
             mTagList = poiItemList;
+
             notifyDataSetChanged();
         }
-
-        if (!thread.isInterrupted()) // اذا كان ال thread منتهي من عمله وتم ارسال الكل
-            thread.interrupt();// شغله ليقوم بارسال الداتا الجديدة
-        else// وإلا
-            //ال thread لازال يعمل لذا قم بترك رسالة له ليعاود العمل عندما ينتهي
-            newDataWhenThreadSendData = true;
     }
 
 
