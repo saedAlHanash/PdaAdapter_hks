@@ -50,7 +50,7 @@ public class ClientFragment extends Fragment {
 
         listeners();
 
-//        initConnected();
+        initConnected();
 
         return view;
     }
