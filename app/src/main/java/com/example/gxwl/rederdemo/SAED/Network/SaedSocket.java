@@ -5,9 +5,11 @@ import org.java_websocket.client.WebSocketClient;
 public class SaedSocket {
     Test test;
     WebSocketClient webSocketClient;
+    public boolean isClosed;
 
     public SaedSocket(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
+
         test = new Test(webSocketClient);
         test.start();
 
@@ -21,5 +23,7 @@ public class SaedSocket {
     public void close() {
         test.killSelf();
         webSocketClient.close();
+        isClosed = true;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.gxwl.rederdemo.SAED;
+package com.example.gxwl.rederdemo.SAED.ViewModels;
 
 import android.graphics.Bitmap;
 

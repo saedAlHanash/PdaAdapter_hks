@@ -102,11 +102,13 @@ public class SmartScanFragment extends Fragment implements View.OnClickListener,
         if (client == null)
             return;
 
+        rateValue = 0L;
         MsgBaseStop msgStop = new MsgBaseStop();
         client.sendSynMsg(msgStop);
         if (0x00 == msgStop.getRtCode()) {
             isReader = false;
             ToastUtils.showText("Stop Success");
+            handlerStop.sendEmptyMessage(1);
         } else
             ToastUtils.showText("Stop Fail");
     }

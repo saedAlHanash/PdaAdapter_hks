@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.gxwl.rederdemo.R;
-import com.example.gxwl.rederdemo.SAED.Product;
+import com.example.gxwl.rederdemo.SAED.ViewModels.Product;
 
 import java.util.ArrayList;
 

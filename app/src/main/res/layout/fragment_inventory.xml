@@ -5,63 +5,143 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
-    android:layoutDirection="ltr"
     android:clickable="true"
-    tools:context=".SAED.UI.Fragments.Client.InventoryFragment"
-    >
+    android:focusable="true"
+    android:layoutDirection="ltr"
+    tools:context=".SAED.UI.Fragments.Client.InventoryFragment">
+
+    <ProgressBar
+        android:id="@+id/progressIndicator"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@drawable/out_line_border_amper"
         android:gravity="center"
-        android:orientation="horizontal"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="@+id/scan"
         app:layout_constraintStart_toStartOf="@+id/inventory"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/progressIndicator">
 
-        <Spinner
-            android:id="@+id/place_spinner"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
-            android:background="@drawable/out_line_border"
-            android:dropDownWidth="match_parent"
-            android:entries="@array/saed1"
-            android:gravity="center"
-            android:paddingTop="@dimen/_10sdp"
-            android:paddingBottom="@dimen/_10sdp"
-            android:popupBackground="@drawable/out_line_border"
-            android:theme="@style/mySpinnerItemStyle" />
+            android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/inventory_spinner"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:fontFamily="@font/cairo_semibold"
+                android:gravity="center"
+                android:text="الصالة"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@drawable/line_horizontal" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:background="@drawable/rounded_shape_circle">
+
+                <Spinner
+                    android:id="@+id/inventory_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:dropDownWidth="match_parent"
+                    android:paddingTop="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_10sdp"
+                    android:popupBackground="@drawable/rounded_shape_circle"
+                    android:spinnerMode="dropdown" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
-            android:background="@drawable/out_line_border"
-            android:dropDownWidth="match_parent"
-            android:entries="@array/saed"
-            android:gravity="center"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:paddingTop="@dimen/_10sdp"
-            android:paddingBottom="@dimen/_10sdp"
-            android:popupBackground="@drawable/out_line_border"
-            android:theme="@style/mySpinnerItemStyle" />
+
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:fontFamily="@font/cairo_semibold"
+                android:gravity="center"
+                android:text="المخزن"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@drawable/line_horizontal" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:background="@drawable/rounded_shape_circle">
+
+                <Spinner
+                    android:id="@+id/warehouses_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:dropDownWidth="match_parent"
+                    android:paddingTop="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_10sdp"
+                    android:popupBackground="@drawable/rounded_shape_circle"
+                    android:spinnerMode="dropdown" />
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+
     </LinearLayout>
-
 
     <android.support.v7.widget.CardView
         android:id="@+id/scan"
         android:layout_width="@dimen/_130sdp"
         android:layout_height="@dimen/_130sdp"
-        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_20sdp"
         app:cardCornerRadius="@dimen/_10sdp"
         app:cardElevation="@dimen/_5sdp"
@@ -78,8 +158,8 @@
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/_10sdp"
                 android:layout_weight="1"
-                android:tint="@color/main_color"
                 android:padding="@dimen/_5sdp"
+                android:tint="@color/main_color"
                 app:srcCompat="@drawable/expected" />
 
             <LinearLayout
@@ -318,5 +398,43 @@
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/read"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:background="@drawable/button_selector"
+            android:fontFamily="@font/cairo_bold"
+            android:text="@string/readCard"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12ssp" />
+
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:background="@drawable/button_selector"
+            android:fontFamily="@font/cairo_bold"
+            android:text="@string/stop"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12ssp" />
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

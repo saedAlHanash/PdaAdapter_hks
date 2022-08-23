@@ -21,7 +21,7 @@ public class AppStateTracker {
           
           public void onActivityStarted(Activity param1Activity) {
             if (this.resumeActivityCount == 0) {
-//              appStateChangeListener.appTurnIntoForeground();
+              appStateChangeListener.appTurnIntoForeground();
             } 
             this.resumeActivityCount++;
           }

@@ -68,24 +68,18 @@
 
 
     <style name="TextViewSpinnerDropDownItem" parent="@android:style/Widget.TextView.SpinnerItem">
-        <item name="android:textSize">@dimen/_10ssp</item>
-        <item name="fontFamily">@font/cairo_bold</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="TextViewSpinnerDropDownItem_language" parent="@android:style/Widget.TextView.SpinnerItem">
-        <item name="android:textSize">0sp</item>
-        <item name="android:textColor">@color/TRANSPARENT</item>
-        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
     </style>
 
 
     <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+
         <item name="android:textDirection">locale</item>
         <item name="android:spinnerDropDownItemStyle">@style/TextViewSpinnerDropDownItem</item>
-        <item name="android:spinnerItemStyle">@style/TextViewSpinnerDropDownItem_language</item>
+        <item name="android:spinnerItemStyle">@style/TextViewSpinnerDropDownItem</item>
         <!-- Override the dropdown item in support library -->
         <item name="spinnerDropDownItemStyle">@style/TextViewSpinnerDropDownItem</item>
+
     </style>
 
     <style name="mySpinnerItemStyle_language" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
@@ -99,6 +93,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:paddingStart">@dimen/_10sdp</item>
         <item name="android:paddingEnd">@dimen/_10sdp</item>
+        <item name="android:layout_margin">@dimen/_10sdp</item>
     </style>
 
     <array name="saed">
@@ -126,5 +121,18 @@
         <item>@string/single</item>
         <item>@string/loop</item>
     </array>
+
+
+    <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem">
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="fontFamily">@font/cairo_bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">@dimen/_10sdp</item>
+    </style>
+
+    <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="fontFamily">@font/cairo_bold</item>
+    </style>
 
 </resources>

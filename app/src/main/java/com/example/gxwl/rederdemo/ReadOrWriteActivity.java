@@ -26,7 +26,7 @@ import com.example.gxwl.rederdemo.Helpers.Converters.GzipConverter;
 import com.example.gxwl.rederdemo.Helpers.Images.ConverterImage;
 import com.example.gxwl.rederdemo.SAED.Network.SaedSocket;
 
-import com.example.gxwl.rederdemo.SAED.Product;
+import com.example.gxwl.rederdemo.SAED.ViewModels.Product;
 import com.example.gxwl.rederdemo.adapter.AdapterItemEpc;
 
 import com.example.gxwl.rederdemo.entity.TagInfo;
@@ -34,28 +34,10 @@ import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.ToastUtils;
 import com.example.gxwl.rederdemo.util.UtilSound;
 import com.gg.reader.api.dal.GClient;
-import com.gg.reader.api.dal.HandlerDebugLog;
-import com.gg.reader.api.dal.HandlerGpiOver;
-import com.gg.reader.api.dal.HandlerGpiStart;
-import com.gg.reader.api.dal.HandlerTag6bLog;
-import com.gg.reader.api.dal.HandlerTag6bOver;
-import com.gg.reader.api.dal.HandlerTagEpcLog;
 import com.gg.reader.api.dal.HandlerTagEpcOver;
-import com.gg.reader.api.dal.HandlerTagGJbLog;
-import com.gg.reader.api.dal.HandlerTagGJbOver;
-import com.gg.reader.api.dal.HandlerTagGbLog;
-import com.gg.reader.api.dal.HandlerTagGbOver;
 import com.gg.reader.api.protocol.gx.EnumG;
-import com.gg.reader.api.protocol.gx.LogAppGpiOver;
-import com.gg.reader.api.protocol.gx.LogAppGpiStart;
-import com.gg.reader.api.protocol.gx.LogBase6bInfo;
-import com.gg.reader.api.protocol.gx.LogBase6bOver;
 import com.gg.reader.api.protocol.gx.LogBaseEpcInfo;
 import com.gg.reader.api.protocol.gx.LogBaseEpcOver;
-import com.gg.reader.api.protocol.gx.LogBaseGJbInfo;
-import com.gg.reader.api.protocol.gx.LogBaseGJbOver;
-import com.gg.reader.api.protocol.gx.LogBaseGbInfo;
-import com.gg.reader.api.protocol.gx.LogBaseGbOver;
 import com.gg.reader.api.protocol.gx.MsgBaseInventoryEpc;
 import com.gg.reader.api.protocol.gx.MsgBaseStop;
 import com.gg.reader.api.protocol.gx.Param6bReadUserdata;
@@ -383,10 +365,12 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     public void stopRead() {
         if (isClient) {
             MsgBaseStop msgStop = new MsgBaseStop();
+            rateValue = 0L;
             client.sendSynMsg(msgStop);
             if (0x00 == msgStop.getRtCode()) {
                 isReader = false;
                 ToastUtils.showText("Stop Success");
+                handlerStop.sendEmptyMessage(1);
             } else
                 ToastUtils.showText("Stop Fail");
 

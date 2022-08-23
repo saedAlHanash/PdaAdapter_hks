@@ -71,8 +71,8 @@ public class AuthFragment extends Fragment {
     void listeners() {
         login.setOnClickListener(adminListener);
         guest.setOnClickListener(guestListener);
-        languageSpinner.setOnItemSelectedListener(languageListener);
 
+        languageSpinner.setOnItemSelectedListener(languageListener);
         languageIcon.setOnClickListener(view1 -> {
             languageSpinner.performClick();
         });
@@ -87,10 +87,10 @@ public class AuthFragment extends Fragment {
     };
 
 
-    private final AdapterView.OnItemSelectedListener languageListener = new AdapterView.OnItemSelectedListener() {
+    private final AdapterView.OnItemSelectedListener languageListener =
+            new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
             switch (i) {
 
                 case 0:

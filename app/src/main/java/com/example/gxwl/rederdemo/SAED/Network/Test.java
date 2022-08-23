@@ -10,40 +10,34 @@ public class Test extends Thread {
     WebSocketClient webSocketClient;
     private String s;
 
-
     public Test(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
     }
 
-
     @Override
     public void run() {
         synchronized (lockSend) {
+
             while (threadKill) {
 
                 try {
                     lockSend.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (InterruptedException ignored) {
                 }
 
                 if (!threadKill)
                     break;
 
-                if (webSocketClient.isClosed()) {
+                if (!webSocketClient.isOpen()) {
                     try {
                         boolean x = false;
                         while (!x)
                             x = webSocketClient.reconnectBlocking();
-
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    } catch (InterruptedException ignored) {
                     }
                 }
 
                 webSocketClient.send(s);
-
             }
         }
     }
