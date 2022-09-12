@@ -10,4 +10,17 @@ public class Product {
     public String ln;
     public String im;
     public Bitmap bitmap;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "epc='" + epc + '\'' +
+                ", pn='" + pn + '\'' +
+                ", pp='" + pp + '\'' +
+                ", wn='" + wn + '\'' +
+                ", ln='" + ln + '\'' +
+                ", im='" + im + '\'' +
+                ", bitmap=" + bitmap +
+                '}';
+    }
 }

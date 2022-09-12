@@ -3,11 +3,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.gxwl.rederdemo"
+        applicationId "com.example.gxwl.rederdemo1"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.5"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -18,12 +18,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-//        debug {
-//            debuggable true
-//            minifyEnabled false
-//            shrinkResources false
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//        }
+        debug {
+            debuggable true
+            minifyEnabled true
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
     sourceSets {
         main {

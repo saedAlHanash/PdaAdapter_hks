@@ -30,8 +30,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="2d2d2d" />
-                            <entry key="outputName" value="ic_wifi" />
-                            <entry key="sourceFile" value="C:\Users\saed\Desktop\wifi-svgrepo-com.svg" />
+                            <entry key="outputName" value="ic_wifi_signal_full_1" />
+                            <entry key="sourceFile" value="C:\Users\saed\Desktop\wifi-signal-full-1.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/ic_cancel_24.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/ic_wifi_signal_full_1.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv0.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv1.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv2.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv3.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv4.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv5.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv6.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv7.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/item_lv_5.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/level_first.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/level_third.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/level_zero.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/rounded_shape1.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/test.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/drawable/text_area.xml" value="0.114" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/layout/activity_main.xml" value="0.1685185185185185" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/layout/custom_snackbar_view.xml" value="0.1685185185185185" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/layout/fragment_inventory.xml" value="0.22" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/layout/fragment_scan.xml" value="0.209375" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/layout/fragment_settings.xml" value="0.1685185185185185" />
+        <entry key="..\:/Users/saed/Desktop/mustakel/Snary/source codes/PdaAdapter_hks/app/src/main/res/layout/fragment_smart_scan.xml" value="0.25" />
+      </map>
+    </option>
+  </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
     <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />

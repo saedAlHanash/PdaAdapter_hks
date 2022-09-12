@@ -9,6 +9,8 @@ import android.support.v4.app.ActivityCompat;
 public class GetPermissions {
 
 
+    private static final int PERMISSION_READ_STATE = 5241;
+
     /**
      * Request access permissions to call the phone
      *
@@ -57,6 +59,16 @@ public class GetPermissions {
         } else {
             return true;
         }
+        return false;
+    }
+
+    public static boolean saedPermetion(Activity activity) {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSION_READ_STATE);
+        else
+            return true;
+
         return false;
     }
 }

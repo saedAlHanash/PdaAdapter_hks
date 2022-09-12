@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.entity.TagInfo;
@@ -51,6 +52,8 @@ public class SmartScanFragment extends Fragment implements View.OnClickListener,
     Button read;
     @BindView(R.id.stop)
     Button stop;
+    @BindView(R.id.rssi)
+    TextView rssiTv;
 
     private final GClient client = GlobalClient.getClient();
 
@@ -64,6 +67,13 @@ public class SmartScanFragment extends Fragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_smart_scan, container, false);
         ButterKnife.bind(this, view);
+
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> imageView8.setImageLevel(1), 1000);
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> imageView8.setImageLevel(2), 3000);
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> imageView8.setImageLevel(3), 5000);
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> imageView8.setImageLevel(4), 7000);
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> imageView8.setImageLevel(5), 8000);
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> imageView8.setImageLevel(6), 9000);
 
         read.setOnClickListener(this);
         stop.setOnClickListener(this);
@@ -127,10 +137,13 @@ public class SmartScanFragment extends Fragment implements View.OnClickListener,
     }
 
     private final Handler handler = new Handler(Looper.getMainLooper()) {
+        @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what > 0 && msg.what <= 4)
+            if (msg.what > 0 && msg.what <= 7) {
                 imageView8.setImageLevel(msg.what);
+                rssiTv.setText("-" + rssi + "dB");
+            }
         }
     };
 
@@ -145,28 +158,42 @@ public class SmartScanFragment extends Fragment implements View.OnClickListener,
         }
     };
 
+    int rssi;
+
     @Override
     public void log(String s, LogBaseEpcInfo info) {
 
         if (!info.getEpc().equals(epc.getText().toString()))
             return;
 
-        int rssi = info.getRssi();
+        rssi = info.getRssi();
 
-        if (rssi < 20)
+
+        if (rssi < 60) {
             handler.sendEmptyMessage(0);
+            return;
+        }
 
-        else if (rssi > 20 && rssi < 50)
+        if (rssi > 60 && rssi < 68)
             handler.sendEmptyMessage(1);
 
-        else if (rssi > 50 && rssi < 80)
+        else if (rssi > 68 && rssi < 76)
             handler.sendEmptyMessage(2);
 
-        else if (rssi > 80 && rssi < 100)
+        else if (rssi > 76 && rssi < 84)
             handler.sendEmptyMessage(3);
 
-        else if (rssi > 100)
+        else if (rssi > 84 && rssi < 92)
             handler.sendEmptyMessage(4);
+
+        else if (rssi > 92 && rssi < 100)
+            handler.sendEmptyMessage(5);
+
+        else if (rssi > 100 && rssi < 108)
+            handler.sendEmptyMessage(6);
+
+        else if (rssi > 108)
+            handler.sendEmptyMessage(7);
 
     }
 
@@ -184,7 +211,6 @@ public class SmartScanFragment extends Fragment implements View.OnClickListener,
             }
         }
     }
-
 
     //程序退出
     @Override

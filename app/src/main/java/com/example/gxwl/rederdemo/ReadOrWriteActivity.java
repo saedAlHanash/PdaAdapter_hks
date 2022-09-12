@@ -2,6 +2,8 @@ package com.example.gxwl.rederdemo;
 
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -26,6 +28,8 @@ import com.example.gxwl.rederdemo.Helpers.Converters.GzipConverter;
 import com.example.gxwl.rederdemo.Helpers.Images.ConverterImage;
 import com.example.gxwl.rederdemo.SAED.Network.SaedSocket;
 
+import com.example.gxwl.rederdemo.SAED.ViewModels.All;
+import com.example.gxwl.rederdemo.SAED.ViewModels.MyViewModel;
 import com.example.gxwl.rederdemo.SAED.ViewModels.Product;
 import com.example.gxwl.rederdemo.adapter.AdapterItemEpc;
 
@@ -45,6 +49,7 @@ import com.gg.reader.api.protocol.gx.ParamEpcReadReserved;
 import com.gg.reader.api.protocol.gx.ParamEpcReadTid;
 import com.gg.reader.api.protocol.gx.ParamEpcReadUserdata;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -92,15 +97,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
     private final GClient client = GlobalClient.getClient();
     private boolean isClient = false;
-    private final Map<String, TagInfo> tagInfoMap = new LinkedHashMap<String, TagInfo>();//去重数据源
-    private final List<TagInfo> tagInfoList = new ArrayList<TagInfo>();//适配器所需数据源
-    private Long index = 1L;//索引
-    //    private RecycleViewAdapter adapter;
-    private ParamEpcReadTid tidParam = null;
-    private ParamEpcReadUserdata userParam = null;
-    private ParamEpcReadReserved reserveParam = null;
-    private Param6bReadUserdata user6bParam = null;
-    private final boolean[] isChecked = new boolean[]{false, false, false};//标识读0-epc与1-user
+    private final List<TagInfo> tagInfoList = new ArrayList<TagInfo>();//适配器所需数据
     private Handler mHandler = new Handler();
     private Runnable r = null;
     private boolean isReader = false;
@@ -108,6 +105,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     private final Handler soundHandler = new Handler();
     private long rateValue = 1L;
 
+    MyViewModel myViewModel;
     //saed :
     /**
      * to checking if can reConnect with socket <p>
@@ -122,6 +120,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
      * socket port
      */
     public int port;
+    ArrayList<String> sentEpc = new ArrayList<>();
     URI uri;
 
     AdapterItemEpc adapter;
@@ -134,6 +133,8 @@ public class ReadOrWriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         ButterKnife.bind(this);
+
+        myViewModel = ViewModelProviders.of(this).get(MyViewModel.class);
 
         isClient = getIntent().getBooleanExtra("isClient", false);
 
@@ -157,25 +158,13 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     int lastIndex = 0;
     Runnable runnable;
 
-    private void computedSpeed() {
-        runnable = () -> {
 
-            int siz = tagInfoList.size();
-
-            tagInfoList.clear();
-            tagInfoList.addAll(tagInfoMap.values());
-
-            if (siz < tagInfoList.size())
-                for (int i = lastIndex; i < tagInfoList.size(); i++) {
-                    socket.send(tagInfoList.get(i).getEpc());
-                    lastIndex += 1;
-                }
-
-            mHandler.postDelayed(runnable, 1000L);///سعيد
-        };
-
-        this.r = runnable;
-        this.mHandler.postDelayed(runnable, 1000L);
+    private void initUri(String mIp, int mPort) {
+        try {
+            uri = new URI("ws://" + mIp + ":" + mPort);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -186,15 +175,12 @@ public class ReadOrWriteActivity extends AppCompatActivity {
      */
     public void initSocket(String mIp, int mPort) {
 
-        try {
-            uri = new URI("ws://" + mIp + ":" + mPort);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        initUri(mIp, mPort);
 
         webSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake h) {
+
                 Log.d(TAG, "onOpen: ");
                 handler.sendEmptyMessage(201);
             }
@@ -202,20 +188,13 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             @Override
             public void onMessage(String message) {
 
-                Log.d(TAG, "onMessage: siz" + message.length());
-                Log.d(TAG, "onMessage: " + message);
-
-                if (message.trim().equals("404")) {
-                    handler.sendEmptyMessage(404);
+                if (message.trim().equals("401")) {
+                    handler.sendEmptyMessage(401);
                     return;
                 }
 
-                Product mm = gson.fromJson(message, Product.class);
-                mm.bitmap = ConverterImage.convertBase64ToBitmap(mm.im);
-
-                list.add(mm);
-                handler.sendEmptyMessage(200);
-
+                if (message.trim().equals("200"))
+                    handler.sendEmptyMessage(1000);
             }
 
             @Override
@@ -234,7 +213,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             public void onMessage(ByteBuffer bytes) {
 
                 byte[] bytes1 = bytes.array();
-                System.out.println(bytes1.length);
                 String message = null;
 
                 try {
@@ -253,10 +231,32 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                     return;
                 }
 
-                Product mm = gson.fromJson(message, Product.class);
-                mm.bitmap = ConverterImage.convertBase64ToBitmap(mm.im);
+                if (message.trim().equals("401")) {
+                    handler.sendEmptyMessage(401);
+                    return;
+                }
 
-                list.add(mm);
+                if (message.trim().equals("200")) {
+                    handler.sendEmptyMessage(1000);
+                    return;
+                }
+
+                if (message.charAt(0) == '[') {
+
+                    ArrayList<All> alls = gson.fromJson(message,
+                            new TypeToken<ArrayList<All>>() {
+                            }.getType());
+
+                    if (myViewModel != null)
+                        myViewModel.allLiveData.postValue(alls);
+                    return;
+                }
+
+                Product product = gson.fromJson(message, Product.class);
+                product.bitmap = ConverterImage.convertBase64ToBitmap(product.im);
+
+                if (myViewModel != null)
+                    myViewModel.productLiveData.postValue(product);
 
                 handler.sendEmptyMessage(200);
             }
@@ -264,7 +264,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
         socket = new SaedSocket(webSocketClient);
     }
-
 
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -281,7 +280,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
                     break;
 
                 case 200:
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemInserted(list.size() - 1);
                     break;
 
                 case 201:
@@ -314,6 +313,7 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     //读卡
     @OnClick(R.id.read)
     public void readCard() {
+
         if (isClient) {
             if (!isReader) {
 
@@ -322,42 +322,24 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 
                 msg.setInventoryMode(EnumG.InventoryMode_Inventory);
 
-//                if (isChecked[0]) {
-//                    tidParam = new ParamEpcReadTid();
-//                    tidParam.setMode(EnumG.ParamTidMode_Auto);
-//                    tidParam.setLen(6);
-//                    msg.setReadTid(tidParam);
-//                }
-//                if (isChecked[1]) {
-//                    userParam = new ParamEpcReadUserdata();
-//                    userParam.setStart(0);
-//                    userParam.setLen(6);
-//                    msg.setReadUserdata(userParam);
-//                }
-//                if (isChecked[2]) {
-//                    reserveParam = new ParamEpcReadReserved();
-//                    reserveParam.setStart(0);
-//                    reserveParam.setLen(4);
-//                    msg.setReadReserved(reserveParam);
-//                }
                 client.sendSynMsg(msg);
 
                 if (0x00 == msg.getRtCode()) {
                     ToastUtils.showText("Start ReadCard");
                     isReader = true;
-                    computedSpeed();
+                    //computedSpeed();
                     soundTask();
 
                 } else {
                     handlerStop.sendEmptyMessage(1);
                     ToastUtils.showText(msg.getRtMsg());
                 }
-            } else {
+            } else
                 ToastUtils.showText(getResources().getString(R.string.read_card_being));
-            }
-        } else {
+
+        } else
             ToastUtils.showText(getResources().getString(R.string.ununited));
-        }
+
     }
 
     //停止
@@ -395,17 +377,21 @@ public class ReadOrWriteActivity extends AppCompatActivity {
     public void subHandler(GClient client) {
 
         client.onTagEpcLog = (readerName, info) -> {
+
             if (info.getResult() == 0) {
+                if (sentEpc.contains(info.getEpc()))
+                    return;
+
+                socket.send("0," + info.getEpc());
+
+                sentEpc.add(info.getEpc());
+
                 Log.d("SAED_", "log: " + info.getEpc());
-                pooled6cData(info);
+
             }
         };
 
-        client.onTagEpcOver = new HandlerTagEpcOver() {
-            public void log(String param1String, LogBaseEpcOver param1LogBaseEpcOver) {
-                handlerStop.sendEmptyMessage(1);
-            }
-        };
+        client.onTagEpcOver = (param1String, param1LogBaseEpcOver) -> handlerStop.sendEmptyMessage(1);
 
 //        client.onTag6bLog = new HandlerTag6bLog() {
 //            public void log(String param1String, LogBase6bInfo param1LogBase6bInfo) {
@@ -531,159 +517,6 @@ public class ReadOrWriteActivity extends AppCompatActivity {
 //        };
     }
 
-    //去重6C
-    public Map<String, TagInfo> pooled6cData(LogBaseEpcInfo paramLogBaseEpcInfo) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(paramLogBaseEpcInfo.getTid());
-        stringBuilder.append(paramLogBaseEpcInfo.getEpc());
-
-        if (this.tagInfoMap.containsKey(stringBuilder.toString())) {
-
-            String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
-                    paramLogBaseEpcInfo.getEpc();
-            TagInfo tagInfo = this.tagInfoMap.get(stringBuilder1);
-            Map<String, TagInfo> map2 = this.tagInfoMap;
-            StringBuilder stringBuilder2 = new StringBuilder();
-            stringBuilder2.append(paramLogBaseEpcInfo.getTid());
-            stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
-            long l = ((TagInfo) Objects.requireNonNull(map2.get(stringBuilder2.toString()))).getCount();
-            stringBuilder2 = new StringBuilder();
-            stringBuilder2.append(paramLogBaseEpcInfo.getRssi());
-            stringBuilder2.append("");
-            tagInfo.setRssi(stringBuilder2.toString());
-            tagInfo.setReservedData(paramLogBaseEpcInfo.getReserved());
-            tagInfo.setUserData(paramLogBaseEpcInfo.getUserdata());
-            tagInfo.setCount(l + 1L);
-            map2 = this.tagInfoMap;
-            stringBuilder2 = new StringBuilder();
-            stringBuilder2.append(paramLogBaseEpcInfo.getTid());
-            stringBuilder2.append(paramLogBaseEpcInfo.getEpc());
-            map2.put(stringBuilder2.toString(), tagInfo);
-
-        } else {
-            TagInfo tagInfo = new TagInfo();
-            tagInfo.setIndex(this.index);
-            tagInfo.setType("6C");
-            tagInfo.setEpc(paramLogBaseEpcInfo.getEpc());
-            tagInfo.setCount(1L);
-            tagInfo.setUserData(paramLogBaseEpcInfo.getUserdata());
-            tagInfo.setReservedData(paramLogBaseEpcInfo.getReserved());
-            tagInfo.setTid(paramLogBaseEpcInfo.getTid());
-            stringBuilder = new StringBuilder();
-            stringBuilder.append(paramLogBaseEpcInfo.getRssi());
-            stringBuilder.append("");
-            tagInfo.setRssi(stringBuilder.toString());
-            tagInfo.setReadTime(new Date());
-            String stringBuilder1 = paramLogBaseEpcInfo.getTid() +
-                    paramLogBaseEpcInfo.getEpc();
-            this.tagInfoMap.put(stringBuilder1, tagInfo);
-            this.index = this.index + 1L;
-        }
-
-        return this.tagInfoMap;
-    }
-
-//    //去重6B
-//    public Map<String, TagInfo> pooled6bData(LogBase6bInfo info) {
-//        if (tagInfoMap.containsKey(info.getTid())) {
-//            TagInfo tagInfo = tagInfoMap.get(info.getTid());
-//            Long count = tagInfoMap.get(info.getTid()).getCount();
-//            count++;
-//            tagInfo.setRssi(info.getRssi() + "");
-//            tagInfo.setCount(count);
-//            tagInfoMap.put(info.getTid(), tagInfo);
-//        } else {
-//            TagInfo tag = new TagInfo();
-//            tag.setIndex(index);
-//            tag.setType("6B");
-//            tag.setCount(1l);
-//            tag.setUserData(info.getUserdata());
-//            if (info.getTid() != null) {
-//                tag.setTid(info.getTid());
-//            }
-//            tag.setRssi(info.getRssi() + "");
-//            tagInfoMap.put(info.getTid(), tag);
-//            index++;
-//        }
-//        handlerStop.sendEmptyMessage(1);
-//        return tagInfoMap;
-//    }
-//
-//    //去重GB
-//    public Map<String, TagInfo> pooledGbData(LogBaseGbInfo info) {
-//        if (tagInfoMap.containsKey(info.getTid() + info.getEpc())) {
-//            TagInfo tagInfo = tagInfoMap.get(info.getTid() + info.getEpc());
-//            Long count = tagInfoMap.get(info.getTid() + info.getEpc()).getCount();
-//            count++;
-//            tagInfo.setRssi(info.getRssi() + "");
-//            tagInfo.setCount(count);
-//            tagInfoMap.put(info.getTid() + info.getEpc(), tagInfo);
-//        } else {
-//            TagInfo tag = new TagInfo();
-//            tag.setIndex(index);
-//            tag.setType("GB");
-//            tag.setEpc(info.getEpc());
-//            tag.setCount(1l);
-//            tag.setUserData(info.getUserdata());
-//            tag.setTid(info.getTid());
-//            tag.setRssi(info.getRssi() + "");
-//            tagInfoMap.put(info.getTid() + info.getEpc(), tag);
-//            index++;
-//        }
-//        handlerStop.sendEmptyMessage(1);
-//        return tagInfoMap;
-//    }
-//
-//
-//    public Map<String, TagInfo> pooledGJbData(LogBaseGJbInfo paramLogBaseGJbInfo) {
-//        Map<String, TagInfo> map = this.tagInfoMap;
-//        StringBuilder stringBuilder = new StringBuilder();
-//        stringBuilder.append(paramLogBaseGJbInfo.getTid());
-//        stringBuilder.append(paramLogBaseGJbInfo.getEpc());
-//        if (map.containsKey(stringBuilder.toString())) {
-//            map = this.tagInfoMap;
-//            stringBuilder = new StringBuilder();
-//            stringBuilder.append(paramLogBaseGJbInfo.getTid());
-//            stringBuilder.append(paramLogBaseGJbInfo.getEpc());
-//            TagInfo tagInfo = map.get(stringBuilder.toString());
-//            Map<String, TagInfo> map2 = this.tagInfoMap;
-//            StringBuilder stringBuilder2 = new StringBuilder();
-//            stringBuilder2.append(paramLogBaseGJbInfo.getTid());
-//            stringBuilder2.append(paramLogBaseGJbInfo.getEpc());
-//            long l = ((TagInfo) map2.get(stringBuilder2.toString())).getCount().longValue();
-//            StringBuilder stringBuilder1 = new StringBuilder();
-//            stringBuilder1.append(paramLogBaseGJbInfo.getRssi());
-//            stringBuilder1.append("");
-//            tagInfo.setRssi(stringBuilder1.toString());
-//            tagInfo.setCount(Long.valueOf(l + 1L));
-//            Map<String, TagInfo> map1 = this.tagInfoMap;
-//            stringBuilder2 = new StringBuilder();
-//            stringBuilder2.append(paramLogBaseGJbInfo.getTid());
-//            stringBuilder2.append(paramLogBaseGJbInfo.getEpc());
-//            map1.put(stringBuilder2.toString(), tagInfo);
-//        } else {
-//            TagInfo tagInfo = new TagInfo();
-//            tagInfo.setIndex(this.index);
-//            tagInfo.setType("GJB");
-//            tagInfo.setEpc(paramLogBaseGJbInfo.getEpc());
-//            tagInfo.setCount(Long.valueOf(1L));
-//            tagInfo.setUserData(paramLogBaseGJbInfo.getUserdata());
-//            tagInfo.setTid(paramLogBaseGJbInfo.getTid());
-//            stringBuilder = new StringBuilder();
-//            stringBuilder.append(paramLogBaseGJbInfo.getRssi());
-//            stringBuilder.append("");
-//            tagInfo.setRssi(stringBuilder.toString());
-//            tagInfo.setReadTime(new Date());
-//            Map<String, TagInfo> map1 = this.tagInfoMap;
-//            StringBuilder stringBuilder1 = new StringBuilder();
-//            stringBuilder1.append(paramLogBaseGJbInfo.getTid());
-//            stringBuilder1.append(paramLogBaseGJbInfo.getEpc());
-//            map1.put(stringBuilder1.toString(), tagInfo);
-//            this.index = Long.valueOf(this.index.longValue() + 1L);
-//        }
-//        return this.tagInfoMap;
-//    }
-
     void soundTask() {
         Runnable runnable = new Runnable() {
             public void run() {
@@ -706,6 +539,14 @@ public class ReadOrWriteActivity extends AppCompatActivity {
             super.handleMessage(param1Message);
         }
     };
+
+    public void getProduct(String epc) {
+        myViewModel.getProduct(socket, epc);
+        myViewModel.productLiveData.observe(this, product -> {
+
+        });
+    }
+
 
     @Override
     protected void onDestroy() {

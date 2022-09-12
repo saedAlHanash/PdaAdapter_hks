@@ -16,11 +16,15 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.gxwl.rederdemo.Helpers.NoteMessage;
+import com.example.gxwl.rederdemo.Helpers.system.HardWar;
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.SAED.UI.Activities.ClientActivity;
 import com.example.gxwl.rederdemo.SAED.ViewModels.All;
 import com.example.gxwl.rederdemo.SAED.ViewModels.MyViewModel;
+import com.example.gxwl.rederdemo.SAED.ViewModels.Report;
 import com.example.gxwl.rederdemo.util.GlobalClient;
 import com.example.gxwl.rederdemo.util.ToastUtils;
 import com.example.gxwl.rederdemo.util.UtilSound;
@@ -32,6 +36,7 @@ import com.gg.reader.api.protocol.gx.MsgBaseInventoryEpc;
 import com.gg.reader.api.protocol.gx.MsgBaseStop;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,6 +65,8 @@ public class InventoryFragment extends Fragment implements View.OnClickListener,
     Button read;
     @BindView(R.id.stop)
     Button stop;
+    @BindView(R.id.report)
+    Button report;
     @BindView(R.id.progressIndicator)
     ProgressBar progressBar;
 
@@ -144,6 +151,7 @@ public class InventoryFragment extends Fragment implements View.OnClickListener,
 
         read.setOnClickListener(this);
         stop.setOnClickListener(this);
+        report.setOnClickListener(this);
     }
 
     //region data socket
@@ -279,7 +287,6 @@ public class InventoryFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void log(String s, LogBaseEpcInfo info) {
-
         if (listStringEpc.isEmpty()) {
             handler.sendEmptyMessage(2);
             stop();
@@ -294,7 +301,7 @@ public class InventoryFragment extends Fragment implements View.OnClickListener,
 
             handler.sendEmptyMessage(0);
 
-        } else if (undefinedList.contains(info.getEpc())) {
+        } else if (!undefinedList.contains(info.getEpc())) {
             undefinedList.add(info.getEpc());
             handler.sendEmptyMessage(1);
         }
@@ -319,17 +326,15 @@ public class InventoryFragment extends Fragment implements View.OnClickListener,
 
         @Override
         public void handleMessage(Message msg) {
-
             switch (msg.what) {
                 case 0: {
                     scanned.setText(String.valueOf(scannedList.size()));
                     notFound.setText(String.valueOf(listStringEpc.size()));
-
                     break;
                 }
                 case 1: {
                     undefined.setText(String.valueOf(undefinedList.size()));
-                    notFound.setText(String.valueOf(listEpc.size()));
+                    notFound.setText(String.valueOf(listStringEpc.size()));
                     break;
                 }
                 case 2: {
@@ -365,12 +370,53 @@ public class InventoryFragment extends Fragment implements View.OnClickListener,
                 read();
                 break;
             }
+
             case R.id.stop: {
 
                 stop();
                 break;
             }
+
+            case R.id.report: {
+
+                sendReport();
+
+                break;
+            }
         }
+    }
+
+    private void sendReport() {
+        startLoading();
+        myViewModel.sendReport(myActivity.socket, createReport());
+        myViewModel.sendReportLiveData.observe(myActivity, doneSend -> {
+
+            if (doneSend == null || !isAdded())
+                return;
+
+            endLoading();
+
+            if (doneSend)
+                NoteMessage.showSnackBar(myActivity, "تم ارسال التقرير بنجاح");
+            else
+                NoteMessage.showSnackBar(myActivity, "format error ");
+
+        });
+    }
+
+    private Report createReport() {
+        Report report = new Report();
+        report.setWid(list.get(warehousesSpinner.getSelectedItemPosition()).id);
+        report.setDt(new Date());
+        report.setLid(listLocations.get(inventorySpinner.getSelectedItemPosition()).id);
+        report.setUsr(HardWar.getIMEINumber(myActivity));
+
+        report.setEpcs1(new ArrayList<>());
+        report.setEpcs2(scannedList);
+        report.setEpcs3(undefinedList);
+        report.setEpcs4(listStringEpc);
+
+        return report;
     }
 
     void removeObserver() {

@@ -435,6 +435,18 @@
             android:textColor="@color/black"
             android:textSize="@dimen/_12ssp" />
 
+        <Button
+            android:id="@+id/report"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:background="@drawable/button_selector"
+            android:fontFamily="@font/cairo_bold"
+            android:text="@string/report"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12ssp" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

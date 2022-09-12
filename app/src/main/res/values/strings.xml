@@ -449,7 +449,6 @@
     <string name="total">الاجمالي</string>
     <string name="pure">الصافي</string>
     <string name="stons">الأحجار</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="report">تقرير</string>
 </resources>
 

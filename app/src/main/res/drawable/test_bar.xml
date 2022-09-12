@@ -2,19 +2,28 @@
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:drawable="@drawable/level_zero"
+        android:drawable="@drawable/item_lv0"
         android:maxLevel="0" />
     <item
-        android:drawable="@drawable/level_first"
+        android:drawable="@drawable/item_lv1"
         android:maxLevel="1" />
     <item
-        android:drawable="@drawable/level_second"
+        android:drawable="@drawable/item_lv2"
         android:maxLevel="2" />
     <item
-        android:drawable="@drawable/level_third"
+        android:drawable="@drawable/item_lv3"
         android:maxLevel="3" />
     <item
-        android:drawable="@drawable/level_forth"
+        android:drawable="@drawable/item_lv4"
         android:maxLevel="4" />
+    <item
+        android:drawable="@drawable/item_lv5"
+        android:maxLevel="5" />
+    <item
+        android:drawable="@drawable/item_lv6"
+        android:maxLevel="6" />
+    <item
+        android:drawable="@drawable/item_lv7"
+        android:maxLevel="7" />
 
 </level-list>

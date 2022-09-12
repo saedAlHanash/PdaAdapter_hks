@@ -87,13 +87,14 @@ public class AuthFragment extends Fragment {
     };
 
 
-    private final AdapterView.OnItemSelectedListener languageListener =
-            new AdapterView.OnItemSelectedListener() {
+    final AdapterView.OnItemSelectedListener languageListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             switch (i) {
 
                 case 0:
+                    if (view == null)
+                        break;
                     ((TextView) view).setTextColor(getResources().getColor(R.color.gray));
                     break;
 

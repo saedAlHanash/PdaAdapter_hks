@@ -13,14 +13,12 @@ import android.view.ViewGroup;
 import com.example.gxwl.rederdemo.AppConfig.FC;
 import com.example.gxwl.rederdemo.AppConfig.FN;
 import com.example.gxwl.rederdemo.AppConfig.SharedPreference;
-import com.example.gxwl.rederdemo.EntryActivity;
 import com.example.gxwl.rederdemo.Helpers.View.FTH;
 import com.example.gxwl.rederdemo.R;
 import com.example.gxwl.rederdemo.ReadOrWriteActivity;
+import com.example.gxwl.rederdemo.SAED.UI.Fragments.Prosess.ScanFragment;
 import com.example.gxwl.rederdemo.util.GlobalClient;
-import com.example.gxwl.rederdemo.util.ToastUtils;
 import com.gg.reader.api.dal.HandlerDebugLog;
-import com.gg.reader.api.utils.HksPower;
 
 import java.util.Locale;
 
@@ -74,17 +72,13 @@ public class ClientFragment extends Fragment {
         startSmartScanFragment();
     };
 
-     void startSmartScanFragment() {
-        FTH.addFragmentUpFragment(FC.CLIENT_C, requireActivity(), new SmartScanFragment(), FN.SMART_SCAN_FN);
-    }
-
     // جرد المخزن
     private final View.OnClickListener inventoryListener = v -> {
         startInventory();
     };
     // مسح منتج
     private final View.OnClickListener scanListener = v -> {
-        startReadOrWriteActivity();
+        startReadOrWrite();
     };
     //اعدادات
     private final View.OnClickListener settingsListener = v -> {
@@ -125,20 +119,23 @@ public class ClientFragment extends Fragment {
 //        }
     }
 
-    void startReadOrWriteActivity() {
+    void startReadOrWrite() {
 
 //        if (isClient) {
 
-        Locale locale = new Locale(SharedPreference.getLanguage());
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getResources().updateConfiguration(config,
-                getResources().getDisplayMetrics());
+        FTH.addFragmentUpFragment(FC.CLIENT_C, requireActivity(),
+                new ScanFragment(), FN.SETTING_FN);
 
-        Intent intent = new Intent(requireActivity(), ReadOrWriteActivity.class);
-        intent.putExtra("isClient", isClient);
-        startActivity(intent);
+//        Locale locale = new Locale(SharedPreference.getLanguage());
+//        Locale.setDefault(locale);
+//        Configuration config = new Configuration();
+//        config.locale = locale;
+//        getResources().updateConfiguration(config,
+//                getResources().getDisplayMetrics());
+//
+//        Intent intent = new Intent(requireActivity(), ReadOrWriteActivity.class);
+//        intent.putExtra("isClient", isClient);
+//        startActivity(intent);
 
 //        } else {
 //            ToastUtils.showText(getResources().getString(R.string.ununited));
@@ -151,5 +148,9 @@ public class ClientFragment extends Fragment {
 
     void startInventory() {
         FTH.addFragmentUpFragment(FC.CLIENT_C, requireActivity(), new InventoryFragment(), FN.SETTING_FN);
+    }
+
+    void startSmartScanFragment() {
+        FTH.addFragmentUpFragment(FC.CLIENT_C, requireActivity(), new SmartScanFragment(), FN.SMART_SCAN_FN);
     }
 }

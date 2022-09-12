@@ -117,7 +117,7 @@ public class AdapterItemEpc extends RecyclerView.Adapter<AdapterItemEpc.Holder> 
      *
      * @param i position adapter == (index in list)
      */
-    private void deleteItem(int i) {
+    public void deleteItem(int i) {
         // delete item with index i in the list
         this.list.remove(i);
         this.notifyItemRemoved(i);
@@ -129,7 +129,7 @@ public class AdapterItemEpc extends RecyclerView.Adapter<AdapterItemEpc.Holder> 
      * @param i    @param i position adapter == (index in list)
      * @param item new Item data
      */
-    private void editItem(int i, Product item) {
+    public void editItem(int i, Product item) {
         // replace item in index i with new item
         this.list.set(i, item);
         this.notifyItemChanged(i);
@@ -140,10 +140,11 @@ public class AdapterItemEpc extends RecyclerView.Adapter<AdapterItemEpc.Holder> 
      *
      * @param item new Item to add it to the list
      */
-    private void insertItem(Product item) {
+    public void insertItem(Product item) {
         // add item in begin of list
-        this.list.add(0, item);
-        this.notifyItemInserted(0);
+        this.list.add(list.size(), item);
+        notifyItemChanged(list.size() - 1);
+
     }
 
 

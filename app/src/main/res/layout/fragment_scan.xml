@@ -1,45 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white"
     android:clickable="true"
-    android:layout_height="match_parent"
-    tools:context=".SAED.UI.Fragments.Client.SmartScanFragment"
     android:focusable="true">
 
-    <EditText
-        android:id="@+id/epc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/out_line_border"
-        android:ems="10"
-        android:gravity="center"
-        android:hint="epc"
-        android:inputType="numberSigned|number"
-        android:maxLength="6"
-        android:paddingStart="@dimen/_5sdp"
-        android:paddingTop="@dimen/_10sdp"
-        android:paddingEnd="@dimen/_5sdp"
-        android:paddingBottom="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
-        android:id="@+id/linearLayout4"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/read"
@@ -53,17 +27,6 @@
             android:textAllCaps="false"
             android:textColor="@color/black"
             android:textSize="@dimen/_12ssp" />
-
-        <Button
-            android:id="@+id/cus_read"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/cus_readCard"
-            android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/text_size_20"
-            android:visibility="gone" />
 
         <Button
             android:id="@+id/stop"
@@ -89,8 +52,7 @@
             android:text="@string/clean"
             android:textAllCaps="false"
             android:textColor="@color/black"
-            android:textSize="@dimen/_12ssp"
-            android:visibility="gone" />
+            android:textSize="@dimen/_12ssp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -111,9 +73,8 @@
                 android:clickable="false"
                 android:dropDownWidth="@dimen/_120sdp"
                 android:entries="@array/scan_type"
-                android:popupBackground="@drawable/out_line_border"
-                android:theme="@style/mySpinnerItemStyle" />
-
+                android:popupBackground="@drawable/out_line_border" />
+            <!--            android:theme="@style/mySpinnerItemStyle"-->
             <TextView
                 android:id="@+id/scan_type_tv"
                 android:layout_width="match_parent"
@@ -130,31 +91,18 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imageView8"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:src="@drawable/test_bar"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/epc" />
-
-    <TextView
-        android:id="@+id/rssi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="@dimen/_120sdp"
-        android:fontFamily="@font/cairo_semibold"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="-80dB" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:spanCount="2"
+        tools:listitem="@layout/item_product" />
 
 </android.support.constraint.ConstraintLayout>
